@@ -1,0 +1,91 @@
+/* LegalLens AI Custom Stylesheet */
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Tab transitions */
+.tab-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-btn.active {
+  border-bottom-color: #6366f1;
+  color: #ffffff;
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+/* Circular Score Gauge */
+#scoreMeterCircle {
+  transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease-in-out;
+}
+
+/* Highlighting searched/cited clauses */
+.highlight-clause {
+  background-color: rgba(99, 102, 241, 0.25);
+  border-left: 3px solid #6366f1;
+  padding-left: 4px;
+  border-radius: 2px;
+}
+
+/* Red flag cards hover elevation */
+.redflag-card {
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.redflag-card:hover {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+/* Print Stylesheet for Pristine Legal PDF Export */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
+  header, footer, nav, button, input, .no-print {
+    display: none !important;
+  }
+  #exportModal {
+    position: static !important;
+    background: transparent !important;
+    display: block !important;
+    padding: 0 !important;
+  }
+  #exportModal > div {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: #0f172a !important;
+  }
+  pre, #auditReportMarkdown {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: none !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+}

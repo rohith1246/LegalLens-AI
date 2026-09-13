@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalLens AI — Legal Copilot & Contract Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            legal: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b'
+            },
+            accent: {
+              500: '#6366f1',
+              600: '#4f46e5'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Track Badge -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <i data-lucide="scale" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">LegalLens AI</span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800/60">PromptWars 2026</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">AI for Legal Assistance & Access • Built for Google for Developers Track</p>
+        </div>
+      </div>
+
+      <!-- Center Status Badge -->
+      <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-300" id="engineStatusLabel">Engine: Groq LLaMA 3.3 70B (Fast LPU)</span>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Sample Contracts Dropdown -->
+        <div class="relative inline-block text-left">
+          <button id="sampleDropdownBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
+            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+            <span>Load Samples</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+          <div id="sampleDropdownMenu" class="hidden absolute right-0 mt-2 w-72 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-1">
+            <div class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pre-Loaded Test Contracts</div>
+            <button onclick="loadSampleContract('msa_freelance')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+              <span class="font-semibold text-white">Freelance MSA (High Risk)</span>
+              <span class="text-[11px] text-amber-400">Uncapped indemnity, Net-60, IP traps</span>
+            </button>
+            <button onclick="loadSampleContract('saas_tos')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+              <span class="font-semibold text-white">Enterprise SaaS Terms of Service</span>
+              <span class="text-[11px] text-amber-400">Auto-renewal trap, unilateral price hike</span>
+            </button>
+            <button onclick="loadSampleContract('residential_lease')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+              <span class="font-semibold text-white">Residential Tenancy Lease</span>
+              <span class="text-[11px] text-amber-400">Landlord entry, non-refundable deposit</span>
+            </button>
+            <button onclick="loadRedlineComparisonSamples()" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-indigo-950/60 text-indigo-300 border border-indigo-900/50 flex flex-col mt-1">
+              <span class="font-semibold text-indigo-200">Load V1 vs V2 Redline Pair</span>
+              <span class="text-[11px] text-indigo-400">For Contract Comparison tab</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- API Key Settings Button -->
+        <button id="apiKeyModalBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
+          <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
+          <span class="hidden sm:inline">Groq API Key</span>
+        </button>
+
+        <!-- Export Report Button -->
+        <button id="exportReportBtn" class="flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-md shadow-emerald-900/30 transition">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Export Audit</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- INPUT & DOCUMENT WORKSPACE BAR -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        
+        <!-- Left: Contract Title & Metadata -->
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-slate-800 rounded-xl border border-slate-700">
+            <i data-lucide="file-check-2" class="w-6 h-6 text-emerald-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h2 id="activeContractTitle" class="text-base sm:text-lg font-bold text-white">Freelance Master Services Agreement (MSA)</h2>
+              <span id="activeContractCategory" class="px-2 py-0.5 text-[11px] font-semibold bg-slate-800 text-slate-300 rounded-md border border-slate-700">Services & Contractor</span>
+            </div>
+            <p id="activeContractParties" class="text-xs text-slate-400">Parties: Acme Innovations Inc. & Alex Rivera (Contractor)</p>
+          </div>
+        </div>
+
+        <!-- Right: Actions (Upload, Toggle Raw Text Inspector, Re-Analyze) -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- File Upload Button -->
+          <label class="cursor-pointer flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
+            <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-400"></i>
+            <span>Upload PDF / DOCX / TXT</span>
+            <input type="file" id="fileUploadInput" class="hidden" accept=".pdf,.docx,.doc,.txt,.md">
+          </label>
+
+          <!-- Toggle Document Inspector -->
+          <button id="toggleInspectorBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
+            <i data-lucide="eye" class="w-4 h-4 text-slate-400"></i>
+            <span id="inspectorBtnText">View Contract Text</span>
+          </button>
+
+          <!-- Run Full Analysis Button -->
+          <button id="runAnalysisBtn" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Run Full AI Audit</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Collapsible Contract Inspector Drawer -->
+      <div id="contractInspector" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Active Contract Text (Click citation badges in analysis tabs to jump to clauses)</span>
+          <div class="flex items-center space-x-3">
+            <span id="charCountLabel">0 characters</span>
+            <button onclick="copyContractText()" class="hover:text-white flex items-center space-x-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+        <textarea id="contractTextInput" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 leading-relaxed" placeholder="Paste or view contract clauses here..."></textarea>
+      </div>
+
+    </div>
+
+    <!-- MAIN FEATURE TABS NAVIGATION -->
+    <div class="border-b border-slate-800 flex space-x-2 sm:space-x-4 overflow-x-auto pb-1 text-sm font-medium scrollbar-none">
+      
+      <button class="tab-btn active flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-indigo-500 text-white bg-slate-900/60" data-tab="tab-simplifier">
+        <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i>
+        <span>Simplifier & Risk Radar</span>
+      </button>
+
+      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-redline">
+        <i data-lucide="git-compare" class="w-4 h-4 text-indigo-400"></i>
+        <span>Contract Redliner (Diff)</span>
+      </button>
+
+      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-interrogate">
+        <i data-lucide="message-square-quote" class="w-4 h-4 text-sky-400"></i>
+        <span>Clause Interrogator</span>
+      </button>
+
+      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-simulator">
+        <i data-lucide="help-circle" class="w-4 h-4 text-amber-400"></i>
+        <span>"What-If" Simulator</span>
+      </button>
+
+      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-redraft">
+        <i data-lucide="pencil-ruler" class="w-4 h-4 text-fuchsia-400"></i>
+        <span>Counter-Clause Drafter</span>
+      </button>
+
+      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-multilingual">
+        <i data-lucide="languages" class="w-4 h-4 text-teal-400"></i>
+        <span>Multilingual Access</span>
+      </button>
+
+    </div>
+
+    <!-- TAB CONTENTS -->
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: SIMPLIFIER & RISK RADAR -->
+    <!-- ======================================================== -->
+    <div id="tab-simplifier" class="tab-content space-y-6">
+      
+      <!-- Top Row: Score Gauge & Key Metrics -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Risk Health Score Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xl">
+          <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
+          <div class="text-xs uppercase font-semibold tracking-wider text-slate-400 mb-2">Overall Contract Health Score</div>
+          
+          <!-- Circular Gauge -->
+          <div class="relative w-36 h-36 flex items-center justify-center my-2">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="none"/>
+              <circle id="scoreMeterCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-amber-500 transition-all duration-1000" fill="none" stroke-dasharray="264" stroke-dashoffset="140" stroke-linecap="round"/>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span id="scoreDisplay" class="text-4xl font-black tracking-tight text-white">48</span>
+              <span class="text-[10px] uppercase font-bold text-slate-400">/ 100</span>
+            </div>
+          </div>
+
+          <div id="riskTierBadge" class="mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800">High Risk Exposure</div>
+          <p class="text-xs text-slate-400 mt-2">Significant legal asymmetries and liability traps detected.</p>
+        </div>
+
+        <!-- 4 Key Contract Commitments -->
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
+              <i data-lucide="key-round" class="w-4 h-4 text-emerald-400"></i>
+              <span>Core Commercial Terms & Legal Commitments</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] font-medium text-slate-400 block mb-1">Financial Exposure</span>
+                <p id="metricFinancial" class="text-xs font-semibold text-rose-300">Contractor: Unlimited liability & uncapped indemnity; Client: Capped at $1,000</p>
+              </div>
+              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] font-medium text-slate-400 block mb-1">Payment Schedule</span>
+                <p id="metricPayment" class="text-xs font-semibold text-amber-300">Net-60 days with entire invoice withholding on disputes</p>
+              </div>
+              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] font-medium text-slate-400 block mb-1">Termination Notice</span>
+                <p id="metricTermination" class="text-xs font-semibold text-rose-300">Client: 3 calendar days; Contractor: 60 calendar days + 50% milestone penalty</p>
+              </div>
+              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] font-medium text-slate-400 block mb-1">Governing Law & Forum</span>
+                <p id="metricJurisdiction" class="text-xs font-semibold text-slate-200">Delaware, Mandatory Arbitration (Contractor advances retainer)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plain-English vs Executive Toggle -->
+          <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-xs text-slate-400">Explainer View Mode:</span>
+            <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800">
+              <button id="viewEli5Btn" class="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition">Layman / ELI5</button>
+              <button id="viewExecBtn" class="px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition">Executive Brief</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Plain English Summary Box -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+          <h3 id="summaryHeading" class="text-sm font-bold text-white uppercase tracking-wider">Layman's Plain-English Breakdown</h3>
+        </div>
+        <div id="summaryContent" class="text-sm text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+          This contract heavily favors the client. You have to wait 2 whole months to get paid, the client can fire you in 3 days without paying milestone balances, but you must give 2 months notice. Most dangerously, they try to own code you write on weekends and make you take unlimited legal blame.
+        </div>
+      </div>
+
+      <!-- Rights vs Obligations Matrix -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
+          <i data-lucide="columns" class="w-4 h-4 text-indigo-400"></i>
+          <span>Rights vs. Obligations Matrix</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Your Rights -->
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-emerald-900/30">
+            <div class="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase mb-3">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Your Rights</span>
+            </div>
+            <ul id="yourRightsList" class="space-y-2 text-xs text-slate-300">
+              <li>• Receive $120/hr compensation after Net-60 days</li>
+              <li>• Exit contract upon providing 60 days advance written notice</li>
+            </ul>
+          </div>
+          <!-- Your Obligations -->
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
+            <div class="flex items-center space-x-2 text-rose-400 text-xs font-bold uppercase mb-3">
+              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              <span>Your Obligations (Burden)</span>
+            </div>
+            <ul id="yourObligationsList" class="space-y-2 text-xs text-slate-300">
+              <li>• Provide professional software consulting services</li>
+              <li>• Assign all weekend and personal device inventions to Client</li>
+              <li>• Defend Client against third-party IP claims without monetary cap</li>
+              <li>• Refrain from recruiting client staff/customers for 18 months</li>
+            </ul>
+          </div>
+          <!-- Counterparty Obligations -->
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-sky-900/30">
+            <div class="flex items-center space-x-2 text-sky-400 text-xs font-bold uppercase mb-3">
+              <i data-lucide="building" class="w-4 h-4"></i>
+              <span>Counterparty Obligations</span>
+            </div>
+            <ul id="counterpartyObligationsList" class="space-y-2 text-xs text-slate-300">
+              <li>• Compensate undisputed invoices within 60 days</li>
+              <li>• Provide Statements of Work outlining scope</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Red Flag Radar (Vulnerabilities Cards) -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i>
+            <span>Red-Flag Radar & Unfair Terms Audit</span>
+          </h3>
+          <span class="text-xs text-slate-400">Click "Draft Counter-Clause" to generate balanced legal wording</span>
+        </div>
+
+        <div id="redFlagsContainer" class="space-y-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Immediate Action Checklist -->
+      <div class="bg-indigo-950/40 border border-indigo-900/50 rounded-2xl p-5">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center space-x-2 mb-3">
+          <i data-lucide="list-checks" class="w-4 h-4"></i>
+          <span>Recommended Pre-Signing Action Checklist</span>
+        </h4>
+        <ul id="actionChecklist" class="space-y-2 text-xs text-slate-200">
+          <li class="flex items-start space-x-2">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span>Request mutual liability cap equal to 12 months fees paid.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span>Carve out Contractor Tools and pre-existing libraries from Section 4.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <span>Shorten payment terms from Net-60 to Net-30 and make termination notice mutual (30 days).</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: CONTRACT REDLINER (DIFF ENGINE) -->
+    <!-- ======================================================== -->
+    <div id="tab-redline" class="tab-content hidden space-y-6">
+      
+      <!-- Redline Controls -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+              <i data-lucide="git-compare" class="w-5 h-5 text-indigo-400"></i>
+              <span>Semantic Contract Redliner & Diff Engine</span>
+            </h3>
+            <p class="text-xs text-slate-400">Detects substantive legal intent alterations between two versions (not just word typos).</p>
+          </div>
+          <button id="runComparisonBtn" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition self-start">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Compare Versions</span>
+          </button>
+        </div>
+
+        <!-- Dual Input Textareas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
+              <span>Version 1 (Original / Baseline)</span>
+              <button onclick="loadSampleContractV1()" class="text-indigo-400 hover:underline">Load Standard MSA</button>
+            </div>
+            <textarea id="diffTextA" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500" placeholder="Paste Version 1 text..."></textarea>
+          </div>
+          <div>
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
+              <span>Version 2 (Counterparty Redline Markup)</span>
+              <button onclick="loadSampleContractV2()" class="text-indigo-400 hover:underline">Load Revised Redline v2</button>
+            </div>
+            <textarea id="diffTextB" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500" placeholder="Paste Version 2 text..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Redline Results Container -->
+      <div id="redlineResults" class="space-y-4">
+        
+        <!-- Score Delta & Summary Banner -->
+        <div class="bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span id="redlineRiskDeltaBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">Significantly Favorable</span>
+              <span id="redlineScoreDelta" class="text-xs font-semibold text-emerald-400">+34 Points Safety Improvement</span>
+            </div>
+            <p id="redlineSummary" class="text-xs text-slate-300 mt-2 leading-relaxed">Version 2 introduces major protective revisions for the Contractor: hourly rate increased to $135/hr, payment terms accelerated from Net-60 to Net-15, termination made mutual at 30 days, pre-existing IP explicitly retained, and liability capped mutually at 12 months fees.</p>
+          </div>
+          <div class="shrink-0 bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+            <span class="text-[11px] text-slate-400 block">Negotiation Verdict</span>
+            <span id="redlineVerdict" class="text-xs font-bold text-emerald-400">Accept Version 2</span>
+          </div>
+        </div>
+
+        <!-- Clause-by-Clause Substantive Alterations -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Substantive Clause Shifts</h4>
+          <div id="clauseShiftsContainer" class="space-y-3">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: CLAUSE INTERROGATOR (GROUNDED COPILOT) -->
+    <!-- ======================================================== -->
+    <div id="tab-interrogate" class="tab-content hidden space-y-4">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col h-[600px]">
+        
+        <!-- Header & Chips -->
+        <div class="border-b border-slate-800 pb-3 mb-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="message-square-quote" class="w-5 h-5 text-sky-400"></i>
+              <h3 class="text-sm font-bold text-white">Grounded Legal Clause Interrogator</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">Answers strictly cited from active contract</span>
+          </div>
+
+          <!-- Quick Query Prompt Chips -->
+          <div class="flex flex-wrap gap-1.5 mt-3">
+            <button onclick="askInterrogator('Can they terminate without cause and what notice is required?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Can they terminate without cause?</button>
+            <button onclick="askInterrogator('Who owns the code and intellectual property?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Who owns the code / IP?</button>
+            <button onclick="askInterrogator('What are the payment deadlines and penalties if overdue?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Payment terms & late fees?</button>
+            <button onclick="askInterrogator('Is there an uncapped indemnification or liability trap?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Is there an uncapped indemnity trap?</button>
+          </div>
+        </div>
+
+        <!-- Chat Conversation Area -->
+        <div id="interrogateMessages" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+          <!-- Initial Welcome Message -->
+          <div class="flex items-start space-x-3">
+            <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0">
+              <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+            </div>
+            <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-2xl max-w-2xl text-slate-200 space-y-2">
+              <p>Hello! I am your Legal Copilot. I have indexed the active contract. You can ask me any question—such as payment terms, non-compete obligations, or hidden liabilities—and I will answer with exact clause citations.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="pt-3 border-t border-slate-800 mt-2">
+          <form id="interrogateForm" class="flex space-x-2">
+            <input type="text" id="interrogateInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500" placeholder="Ask any question about this contract (e.g., 'What happens if I get sued by a third party?')...">
+            <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Ask</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: "WHAT-IF" SCENARIO SIMULATOR -->
+    <!-- ======================================================== -->
+    <div id="tab-simulator" class="tab-content hidden space-y-6">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i>
+            <span>"What-If" Dispute & Scenario Simulator</span>
+          </h3>
+          <p class="text-xs text-slate-400">Stress-test real-world hypothetical disputes against this contract's clauses before you sign.</p>
+        </div>
+
+        <!-- Preset Scenario Buttons -->
+        <div class="flex flex-wrap gap-2">
+          <span class="text-xs text-slate-400 self-center">Try presets:</span>
+          <button onclick="setScenario('What if the client delays milestone payment by 60 days and ignores my emails?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Client 60-day late payment</button>
+          <button onclick="setScenario('What if I terminate the contract after 3 months because the client changed the project scope?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Early contractor termination</button>
+          <button onclick="setScenario('What if a third party sues claiming an open-source library I used infringes their patent?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Third-party IP lawsuit</button>
+        </div>
+
+        <!-- Custom Scenario Form -->
+        <form id="scenarioForm" class="space-y-3">
+          <textarea id="scenarioInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-amber-500" placeholder="Type a scenario (e.g., 'What happens if the client demands unlimited revisions without extra pay?')..."></textarea>
+          <button type="submit" class="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-amber-600/30 transition">
+            <i data-lucide="play" class="w-4 h-4"></i>
+            <span>Simulate Scenario Outcome</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Simulation Results Card -->
+      <div id="scenarioResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-4">
+          <div>
+            <span class="text-[11px] uppercase font-bold text-amber-400">Simulation Verdict</span>
+            <h4 id="scenarioTitle" class="text-sm font-bold text-white mt-0.5">What if client delays payment by 60 days?</h4>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-slate-400">Your Leverage:</span>
+            <span id="scenarioLeverageBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-950 text-rose-300 border border-rose-800">Weak / Highly Vulnerable</span>
+          </div>
+        </div>
+
+        <!-- Projected Outcome -->
+        <div>
+          <h5 class="text-xs font-bold text-slate-300 uppercase mb-1">Projected Legal Outcome</h5>
+          <p id="scenarioOutcome" class="text-xs text-slate-300 bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 leading-relaxed">
+            Under Section 2 and Section 3, you are at a serious disadvantage. Payment is on Net-60 terms and disputed invoices can be held in full with 0% late interest. If you stop work or walk away due to non-payment, the client may invoke Section 3(c) to claim you forfeited 50% of your milestone fees.
+          </p>
+        </div>
+
+        <!-- Action Plan & Traps -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Step-by-Step Action Plan -->
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+            <h5 class="text-xs font-bold text-emerald-400 uppercase mb-2 flex items-center space-x-1.5">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <span>Step-by-Step Strategic Action Plan</span>
+            </h5>
+            <ul id="scenarioActionPlan" class="space-y-2 text-xs text-slate-300">
+              <li>• Step 1: Send a formal written Notice of Default confirming completion of milestone deliverables.</li>
+              <li>• Step 2: Do not verbally walk off to prevent triggering Section 3(c) forfeiture.</li>
+              <li>• Step 3: Offer a milestone delivery pause pending resolution before next SOW tasks.</li>
+            </ul>
+          </div>
+
+          <!-- Traps to Avoid -->
+          <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
+            <h5 class="text-xs font-bold text-rose-400 uppercase mb-2 flex items-center space-x-1.5">
+              <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+              <span>Critical Traps to Avoid</span>
+            </h5>
+            <ul id="scenarioTraps" class="space-y-2 text-xs text-slate-300">
+              <li>• Do not abruptly wipe server access, as Section 6 uncapped indemnity could be weaponized against you.</li>
+              <li>• Never agree verbally to extensions without an email paper trail.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: COUNTER-CLAUSE DRAFTER (NEGOTIATOR COPILOT) -->
+    <!-- ======================================================== -->
+    <div id="tab-redraft" class="tab-content hidden space-y-6">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="pencil-ruler" class="w-5 h-5 text-fuchsia-400"></i>
+            <span>AI Smart Counter-Clause Drafter & Negotiation Copilot</span>
+          </h3>
+          <p class="text-xs text-slate-400">Transform any one-sided or unfair clause into a balanced, legally enforceable counter-proposal.</p>
+        </div>
+
+        <form id="redraftForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Clause to Redraft (Paste or select from red flags):</label>
+            <textarea id="redraftClauseInput" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-fuchsia-500" placeholder="Paste the unfair clause here..."></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-slate-400">Negotiation Strategy:</span>
+              <select id="redraftGoalSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-fuchsia-500">
+                <option value="balanced">Mutual / Fair & Balanced (Standard Industry Practice)</option>
+                <option value="protective">User-Protective (Aggressive Safeguards)</option>
+                <option value="plain_english">Plain-English / Simplified Language</option>
+              </select>
+            </div>
+
+            <button type="submit" class="flex items-center space-x-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-fuchsia-600/30 transition">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Generate Counter-Clause</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Redraft Output Card -->
+      <div id="redraftResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+        
+        <!-- Critique -->
+        <div>
+          <span class="text-[11px] font-bold uppercase text-rose-400">Problem with Original Clause</span>
+          <p id="redraftCritique" class="text-xs text-slate-300 mt-1">The original clause establishes unilateral, uncapped liability and unfair termination penalties that violate standard commercial norms.</p>
+        </div>
+
+        <!-- Revised Clause -->
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+              <span>Recommended Replacement Legal Wording</span>
+            </span>
+            <button onclick="copyElementText('redraftWording')" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy Clause</span>
+            </button>
+          </div>
+          <pre id="redraftWording" class="text-xs font-mono text-emerald-200 whitespace-pre-wrap leading-relaxed">
+7. BALANCED LIMITATION OF LIABILITY AND INDEMNIFICATION
+(a) Mutual Indemnification: Each party shall defend and indemnify the other party from direct damages arising out of third-party claims resulting from gross negligence or intentional infringement.
+(b) Mutual Liability Cap: TO THE MAXIMUM EXTENT PERMITTED BY LAW, NEITHER PARTY'S AGGREGATE LIABILITY SHALL EXCEED THE TOTAL FEES PAID IN THE PRIOR TWELVE (12) MONTHS.
+(c) Waiver of Consequential Damages: Neither party shall be liable for indirect or consequential damages.
+          </pre>
+        </div>
+
+        <!-- Email Pitch to Send to Counterparty -->
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-indigo-400 flex items-center space-x-1.5">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+              <span>Ready-to-Send Negotiation Email Justification</span>
+            </span>
+            <button onclick="copyElementText('redraftEmailPitch')" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy Email</span>
+            </button>
+          </div>
+          <pre id="redraftEmailPitch" class="text-xs font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">
+Hi [Client Name],
+
+Thanks for sending over the draft. Regarding Section 6/7, our standard company policy (consistent with technology consulting industry practice) is for liability and indemnification to be mutual and capped at the total contract value over the prior 12 months. 
+
+I've prepared a balanced mutual redraft for this clause that protects both parties equally while keeping project momentum moving forward. Please let me know if this revision works for your legal team.
+
+Best regards,
+[Your Name]
+          </pre>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: MULTILINGUAL ACCESS ENGINE -->
+    <!-- ======================================================== -->
+    <div id="tab-multilingual" class="tab-content hidden space-y-6">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="languages" class="w-5 h-5 text-teal-400"></i>
+            <span>Multilingual Legal Access (Democratizing Legal Understanding)</span>
+          </h3>
+          <p class="text-xs text-slate-400">Translates complex legal jargon into plain regional language so everyday citizens and non-native speakers understand their rights.</p>
+        </div>
+
+        <form id="translateForm" class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-slate-300 font-semibold">Select Target Language:</span>
+              <select id="targetLanguageSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500">
+                <option value="Hindi">Hindi (हिन्दी)</option>
+                <option value="Spanish">Spanish (Español)</option>
+                <option value="French">French (Français)</option>
+                <option value="German">German (Deutsch)</option>
+                <option value="Telugu">Telugu (తెలుగు)</option>
+                <option value="Tamil">Tamil (தமிழ்)</option>
+                <option value="Bengali">Bengali (বাংলা)</option>
+                <option value="Portuguese">Portuguese (Português)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-teal-600/30 transition">
+              <i data-lucide="globe" class="w-4 h-4"></i>
+              <span>Translate & Explain</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Translation Results -->
+      <div id="translationResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        
+        <div>
+          <span id="transTargetLangBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-teal-950 text-teal-300 border border-teal-800">Hindi (हिन्दी)</span>
+          <h4 id="transTitle" class="text-sm font-bold text-white mt-2">अनुबंध का सरल कानूनी सारांश (Legal Summary)</h4>
+        </div>
+
+        <!-- Plain explanation in regional language -->
+        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+          <span class="text-xs font-bold text-teal-400 block mb-1">सरल भाषा में आपके अधिकारों का अर्थ (What This Means in Everyday Terms):</span>
+          <p id="transPlainExplanation" class="text-xs text-slate-200 leading-relaxed">
+            इस अनुबंध में आपके लिए सबसे बड़ा खतरा यह है कि पैसे मिलने में 2 महीने तक की देरी हो सकती है, और किसी भी कानूनी विवाद में पूरा हर्जाना आपको ही भुगतना पड़ सकता है जबकि क्लाइंट की जिम्मेदारी बहुत सीमित ($1,000) रखी गई है।
+          </p>
+        </div>
+
+        <!-- Translated Content -->
+        <div>
+          <span class="text-xs font-bold text-slate-300 block mb-1">पूर्ण अनुवाद (Full Translation):</span>
+          <div id="transContent" class="text-xs text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 leading-relaxed whitespace-pre-wrap">
+यह समझौता ग्राहक और कांट्रैक्टर के बीच सॉफ्टवेयर विकास के लिए है। इसमें भुगतान की शर्तें 60 दिनों की हैं और यदि कोई विवाद होता है, तो पूरा भुगतान रोका जा सकता है। इसके अलावा, कांट्रैक्टर पर असीमित हर्जाने (Uncapped Indemnity) का जोखिम डाला गया है।
+          </div>
+        </div>
+
+        <!-- Glossary of Tricky Legal Terms in Target Language -->
+        <div>
+          <span class="text-xs font-bold text-slate-300 block mb-2">मुख्य कानूनी शब्दकोश (Legal Terms Glossary):</span>
+          <div id="transGlossary" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Glossary items -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: GROQ API KEY CONFIGURATION -->
+  <!-- ======================================================== -->
+  <div id="apiKeyModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400">
+            <i data-lucide="key" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Groq API Key Settings</h3>
+        </div>
+        <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        LegalLens AI utilizes <strong class="text-white">Groq's LPU Inference Engine</strong> running <strong class="text-indigo-400">LLaMA 3.3 70B Versatile</strong> for sub-second, state-of-the-art legal analysis.
+      </p>
+
+      <div class="space-y-2">
+        <label class="text-xs font-semibold text-slate-300">Your Groq API Key:</label>
+        <input type="password" id="groqApiKeyInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono" placeholder="gsk_...">
+        <p class="text-[11px] text-slate-500">Don't have a key? Get one for free in 30 seconds at <a href="https://console.groq.com/keys" target="_blank" class="text-indigo-400 hover:underline">console.groq.com</a>.</p>
+      </div>
+
+      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+        <strong class="text-slate-200">Zero-Friction Hackathon Mode:</strong> If left empty, LegalLens AI automatically operates in High-Fidelity Heuristic Mode, so judges and reviewers can test instantly without barriers!
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="clearApiKey()" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white rounded-lg transition">Clear Key</button>
+        <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-md transition">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: EXPORT AUDIT REPORT -->
+  <!-- ======================================================== -->
+  <div id="exportModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="file-check" class="w-5 h-5 text-emerald-400"></i>
+          <h3 class="text-base font-bold text-white">Comprehensive Legal Audit Report</h3>
+        </div>
+        <button onclick="closeExportModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto pr-1">
+        <pre id="auditReportMarkdown" class="text-xs font-mono text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap leading-relaxed"></pre>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <span class="text-xs text-slate-400">Formatted and ready for legal counsel review</span>
+        <div class="flex space-x-2">
+          <button onclick="copyElementText('auditReportMarkdown')" class="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center space-x-1">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Copy Markdown</span>
+          </button>
+          <button onclick="window.print()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition flex items-center space-x-1">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print / Save PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>LegalLens AI — Built for PromptWars 2026 (Google for Developers Calibration Track)</div>
+      <div class="flex items-center space-x-4">
+        <span>Powered by Groq LPU & LLaMA 3.3 70B</span>
+        <span>•</span>
+        <a href="https://github.com" target="_blank" class="hover:text-slate-300">GitHub Repo (&lt;10MB)</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App JavaScript -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
