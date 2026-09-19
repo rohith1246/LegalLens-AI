@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LegalLens AI — Enterprise-grade AI Legal Copilot & Contract Intelligence platform built for PromptWars 2026.">
   <title>LegalLens AI — Legal Copilot & Contract Intelligence</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,18 +35,23 @@
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
 
+  <!-- ACCESSIBILITY: Skip to main content link -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white">
+    Skip to main content
+  </a>
+
   <!-- TOP NAVIGATION HEADER -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <!-- Brand & Track Badge -->
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <i data-lucide="scale" class="w-6 h-6 text-white"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20" aria-hidden="true">
+          <i data-lucide="scale" class="w-6 h-6 text-white" aria-hidden="true"></i>
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">LegalLens AI</span>
+            <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">LegalLens AI</h1>
             <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800/60">PromptWars 2026</span>
           </div>
           <p class="text-xs text-slate-400 hidden sm:block">AI for Legal Assistance & Access • Built for Google for Developers Track</p>
@@ -53,35 +59,36 @@
       </div>
 
       <!-- Center Status Badge -->
-      <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs" role="status" aria-live="polite">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
         <span class="text-slate-300" id="engineStatusLabel">Engine: Groq LLaMA 3.3 70B (Fast LPU)</span>
       </div>
 
       <!-- Action Controls -->
       <div class="flex items-center space-x-2 sm:space-x-3">
+        
         <!-- Sample Contracts Dropdown -->
         <div class="relative inline-block text-left">
-          <button id="sampleDropdownBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
-            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+          <button id="sampleDropdownBtn" aria-haspopup="true" aria-expanded="false" aria-label="Load pre-loaded sample test contracts" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
             <span>Load Samples</span>
-            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400" aria-hidden="true"></i>
           </button>
-          <div id="sampleDropdownMenu" class="hidden absolute right-0 mt-2 w-72 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-1">
+          <div id="sampleDropdownMenu" role="menu" aria-label="Sample Contracts Menu" class="hidden absolute right-0 mt-2 w-72 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-1">
             <div class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pre-Loaded Test Contracts</div>
-            <button onclick="loadSampleContract('msa_freelance')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+            <button role="menuitem" onclick="loadSampleContract('msa_freelance')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
               <span class="font-semibold text-white">Freelance MSA (High Risk)</span>
               <span class="text-[11px] text-amber-400">Uncapped indemnity, Net-60, IP traps</span>
             </button>
-            <button onclick="loadSampleContract('saas_tos')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+            <button role="menuitem" onclick="loadSampleContract('saas_tos')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
               <span class="font-semibold text-white">Enterprise SaaS Terms of Service</span>
               <span class="text-[11px] text-amber-400">Auto-renewal trap, unilateral price hike</span>
             </button>
-            <button onclick="loadSampleContract('residential_lease')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col">
+            <button role="menuitem" onclick="loadSampleContract('residential_lease')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
               <span class="font-semibold text-white">Residential Tenancy Lease</span>
               <span class="text-[11px] text-amber-400">Landlord entry, non-refundable deposit</span>
             </button>
-            <button onclick="loadRedlineComparisonSamples()" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-indigo-950/60 text-indigo-300 border border-indigo-900/50 flex flex-col mt-1">
+            <button role="menuitem" onclick="loadRedlineComparisonSamples()" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-indigo-950/60 text-indigo-300 border border-indigo-900/50 flex flex-col mt-1 focus:outline-none focus:bg-indigo-950">
               <span class="font-semibold text-indigo-200">Load V1 vs V2 Redline Pair</span>
               <span class="text-[11px] text-indigo-400">For Contract Comparison tab</span>
             </button>
@@ -89,14 +96,14 @@
         </div>
 
         <!-- API Key Settings Button -->
-        <button id="apiKeyModalBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
-          <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
+        <button id="apiKeyModalBtn" aria-label="Configure Groq API Key" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <i data-lucide="key" class="w-4 h-4 text-amber-400" aria-hidden="true"></i>
           <span class="hidden sm:inline">Groq API Key</span>
         </button>
 
         <!-- Export Report Button -->
-        <button id="exportReportBtn" class="flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-md shadow-emerald-900/30 transition">
-          <i data-lucide="download" class="w-4 h-4"></i>
+        <button id="exportReportBtn" aria-label="Export comprehensive legal audit report" class="flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-md shadow-emerald-900/30 transition focus:outline-none focus:ring-2 focus:ring-emerald-400">
+          <i data-lucide="download" class="w-4 h-4" aria-hidden="true"></i>
           <span class="hidden sm:inline">Export Audit</span>
         </button>
       </div>
@@ -105,16 +112,16 @@
   </header>
 
   <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
     <!-- INPUT & DOCUMENT WORKSPACE BAR -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
+    <section aria-labelledby="activeContractTitle" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         
         <!-- Left: Contract Title & Metadata -->
         <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-slate-800 rounded-xl border border-slate-700">
-            <i data-lucide="file-check-2" class="w-6 h-6 text-emerald-400"></i>
+          <div class="p-2.5 bg-slate-800 rounded-xl border border-slate-700" aria-hidden="true">
+            <i data-lucide="file-check-2" class="w-6 h-6 text-emerald-400" aria-hidden="true"></i>
           </div>
           <div>
             <div class="flex items-center space-x-2">
@@ -128,21 +135,21 @@
         <!-- Right: Actions (Upload, Toggle Raw Text Inspector, Re-Analyze) -->
         <div class="flex flex-wrap items-center gap-2">
           <!-- File Upload Button -->
-          <label class="cursor-pointer flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
-            <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-400"></i>
+          <label for="fileUploadInput" class="cursor-pointer flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus-within:ring-2 focus-within:ring-indigo-500">
+            <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
             <span>Upload PDF / DOCX / TXT</span>
-            <input type="file" id="fileUploadInput" class="hidden" accept=".pdf,.docx,.doc,.txt,.md">
+            <input type="file" id="fileUploadInput" class="sr-only" accept=".pdf,.docx,.doc,.txt,.md" aria-label="Upload PDF, DOCX, or TXT contract file">
           </label>
 
           <!-- Toggle Document Inspector -->
-          <button id="toggleInspectorBtn" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition">
-            <i data-lucide="eye" class="w-4 h-4 text-slate-400"></i>
+          <button id="toggleInspectorBtn" aria-expanded="false" aria-controls="contractInspector" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <i data-lucide="eye" class="w-4 h-4 text-slate-400" aria-hidden="true"></i>
             <span id="inspectorBtnText">View Contract Text</span>
           </button>
 
           <!-- Run Full Analysis Button -->
-          <button id="runAnalysisBtn" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <button id="runAnalysisBtn" aria-label="Run full AI contract audit" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
             <span>Run Full AI Audit</span>
           </button>
         </div>
@@ -150,85 +157,87 @@
       </div>
 
       <!-- Collapsible Contract Inspector Drawer -->
-      <div id="contractInspector" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-2">
+      <div id="contractInspector" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-2" aria-hidden="true">
         <div class="flex items-center justify-between text-xs text-slate-400">
-          <span>Active Contract Text (Click citation badges in analysis tabs to jump to clauses)</span>
+          <label for="contractTextInput" class="font-medium">Active Contract Text (Click citation badges in analysis tabs to jump to clauses)</label>
           <div class="flex items-center space-x-3">
             <span id="charCountLabel">0 characters</span>
-            <button onclick="copyContractText()" class="hover:text-white flex items-center space-x-1">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <button onclick="copyContractText()" aria-label="Copy active contract text" class="hover:text-white flex items-center space-x-1 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
               <span>Copy</span>
             </button>
           </div>
         </div>
-        <textarea id="contractTextInput" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 leading-relaxed" placeholder="Paste or view contract clauses here..."></textarea>
+        <textarea id="contractTextInput" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 leading-relaxed" placeholder="Paste or view contract clauses here..."></textarea>
       </div>
 
-    </div>
+    </section>
 
-    <!-- MAIN FEATURE TABS NAVIGATION -->
-    <div class="border-b border-slate-800 flex space-x-2 sm:space-x-4 overflow-x-auto pb-1 text-sm font-medium scrollbar-none">
-      
-      <button class="tab-btn active flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-indigo-500 text-white bg-slate-900/60" data-tab="tab-simplifier">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400"></i>
-        <span>Simplifier & Risk Radar</span>
-      </button>
+    <!-- MAIN FEATURE TABS NAVIGATION (WCAG 2.1 Tablist) -->
+    <nav aria-label="Legal AI analysis modules" class="border-b border-slate-800">
+      <div role="tablist" class="flex space-x-2 sm:space-x-4 overflow-x-auto pb-1 text-sm font-medium scrollbar-none">
+        
+        <button role="tab" id="tab-btn-simplifier" aria-selected="true" aria-controls="tab-simplifier" class="tab-btn active flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-indigo-500 text-white bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simplifier">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
+          <span>Simplifier & Risk Radar</span>
+        </button>
 
-      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-redline">
-        <i data-lucide="git-compare" class="w-4 h-4 text-indigo-400"></i>
-        <span>Contract Redliner (Diff)</span>
-      </button>
+        <button role="tab" id="tab-btn-redline" aria-selected="false" aria-controls="tab-redline" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redline">
+          <i data-lucide="git-compare" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
+          <span>Contract Redliner (Diff)</span>
+        </button>
 
-      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-interrogate">
-        <i data-lucide="message-square-quote" class="w-4 h-4 text-sky-400"></i>
-        <span>Clause Interrogator</span>
-      </button>
+        <button role="tab" id="tab-btn-interrogate" aria-selected="false" aria-controls="tab-interrogate" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-interrogate">
+          <i data-lucide="message-square-quote" class="w-4 h-4 text-sky-400" aria-hidden="true"></i>
+          <span>Clause Interrogator</span>
+        </button>
 
-      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-simulator">
-        <i data-lucide="help-circle" class="w-4 h-4 text-amber-400"></i>
-        <span>"What-If" Simulator</span>
-      </button>
+        <button role="tab" id="tab-btn-simulator" aria-selected="false" aria-controls="tab-simulator" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simulator">
+          <i data-lucide="help-circle" class="w-4 h-4 text-amber-400" aria-hidden="true"></i>
+          <span>"What-If" Simulator</span>
+        </button>
 
-      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-redraft">
-        <i data-lucide="pencil-ruler" class="w-4 h-4 text-fuchsia-400"></i>
-        <span>Counter-Clause Drafter</span>
-      </button>
+        <button role="tab" id="tab-btn-redraft" aria-selected="false" aria-controls="tab-redraft" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redraft">
+          <i data-lucide="pencil-ruler" class="w-4 h-4 text-fuchsia-400" aria-hidden="true"></i>
+          <span>Counter-Clause Drafter</span>
+        </button>
 
-      <button class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40" data-tab="tab-multilingual">
-        <i data-lucide="languages" class="w-4 h-4 text-teal-400"></i>
-        <span>Multilingual Access</span>
-      </button>
+        <button role="tab" id="tab-btn-multilingual" aria-selected="false" aria-controls="tab-multilingual" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-multilingual">
+          <i data-lucide="languages" class="w-4 h-4 text-teal-400" aria-hidden="true"></i>
+          <span>Multilingual Access</span>
+        </button>
 
-    </div>
+      </div>
+    </nav>
 
     <!-- TAB CONTENTS -->
 
     <!-- ======================================================== -->
     <!-- TAB 1: SIMPLIFIER & RISK RADAR -->
     <!-- ======================================================== -->
-    <div id="tab-simplifier" class="tab-content space-y-6">
+    <div role="tabpanel" id="tab-simplifier" aria-labelledby="tab-btn-simplifier" class="tab-content space-y-6">
       
       <!-- Top Row: Score Gauge & Key Metrics -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Risk Health Score Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xl">
-          <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xl" role="region" aria-label="Overall contract safety evaluation">
+          <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl" aria-hidden="true"></div>
           <div class="text-xs uppercase font-semibold tracking-wider text-slate-400 mb-2">Overall Contract Health Score</div>
           
           <!-- Circular Gauge -->
-          <div class="relative w-36 h-36 flex items-center justify-center my-2">
-            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          <div class="relative w-36 h-36 flex items-center justify-center my-2" role="img" aria-label="Contract Health Score Meter">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
               <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="none"/>
               <circle id="scoreMeterCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-amber-500 transition-all duration-1000" fill="none" stroke-dasharray="264" stroke-dashoffset="140" stroke-linecap="round"/>
             </svg>
-            <div class="absolute flex flex-col items-center">
+            <div class="absolute flex flex-col items-center" aria-live="polite">
               <span id="scoreDisplay" class="text-4xl font-black tracking-tight text-white">48</span>
               <span class="text-[10px] uppercase font-bold text-slate-400">/ 100</span>
             </div>
           </div>
 
-          <div id="riskTierBadge" class="mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800">High Risk Exposure</div>
+          <div id="riskTierBadge" class="mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800" role="status">High Risk Exposure</div>
           <p class="text-xs text-slate-400 mt-2">Significant legal asymmetries and liability traps detected.</p>
         </div>
 
@@ -236,7 +245,7 @@
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
           <div>
             <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
-              <i data-lucide="key-round" class="w-4 h-4 text-emerald-400"></i>
+              <i data-lucide="key-round" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
               <span>Core Commercial Terms & Legal Commitments</span>
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -262,9 +271,9 @@
           <!-- Plain-English vs Executive Toggle -->
           <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
             <span class="text-xs text-slate-400">Explainer View Mode:</span>
-            <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800">
-              <button id="viewEli5Btn" class="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition">Layman / ELI5</button>
-              <button id="viewExecBtn" class="px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition">Executive Brief</button>
+            <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800" role="radiogroup" aria-label="Explainer Mode Selector">
+              <button id="viewEli5Btn" role="radio" aria-checked="true" class="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Layman / ELI5</button>
+              <button id="viewExecBtn" role="radio" aria-checked="false" class="px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Executive Brief</button>
             </div>
           </div>
         </div>
@@ -274,10 +283,10 @@
       <!-- Plain English Summary Box -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
         <div class="flex items-center space-x-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-indigo-500" aria-hidden="true"></div>
           <h3 id="summaryHeading" class="text-sm font-bold text-white uppercase tracking-wider">Layman's Plain-English Breakdown</h3>
         </div>
-        <div id="summaryContent" class="text-sm text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+        <div id="summaryContent" aria-live="polite" class="text-sm text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
           This contract heavily favors the client. You have to wait 2 whole months to get paid, the client can fire you in 3 days without paying milestone balances, but you must give 2 months notice. Most dangerously, they try to own code you write on weekends and make you take unlimited legal blame.
         </div>
       </div>
@@ -285,14 +294,14 @@
       <!-- Rights vs Obligations Matrix -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
         <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
-          <i data-lucide="columns" class="w-4 h-4 text-indigo-400"></i>
+          <i data-lucide="columns" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
           <span>Rights vs. Obligations Matrix</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Your Rights -->
           <div class="bg-slate-950/70 p-4 rounded-xl border border-emerald-900/30">
             <div class="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <i data-lucide="check-circle" class="w-4 h-4" aria-hidden="true"></i>
               <span>Your Rights</span>
             </div>
             <ul id="yourRightsList" class="space-y-2 text-xs text-slate-300">
@@ -303,7 +312,7 @@
           <!-- Your Obligations -->
           <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
             <div class="flex items-center space-x-2 text-rose-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+              <i data-lucide="alert-triangle" class="w-4 h-4" aria-hidden="true"></i>
               <span>Your Obligations (Burden)</span>
             </div>
             <ul id="yourObligationsList" class="space-y-2 text-xs text-slate-300">
@@ -316,7 +325,7 @@
           <!-- Counterparty Obligations -->
           <div class="bg-slate-950/70 p-4 rounded-xl border border-sky-900/30">
             <div class="flex items-center space-x-2 text-sky-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="building" class="w-4 h-4"></i>
+              <i data-lucide="building" class="w-4 h-4" aria-hidden="true"></i>
               <span>Counterparty Obligations</span>
             </div>
             <ul id="counterpartyObligationsList" class="space-y-2 text-xs text-slate-300">
@@ -331,13 +340,13 @@
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400"></i>
+            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400" aria-hidden="true"></i>
             <span>Red-Flag Radar & Unfair Terms Audit</span>
           </h3>
           <span class="text-xs text-slate-400">Click "Draft Counter-Clause" to generate balanced legal wording</span>
         </div>
 
-        <div id="redFlagsContainer" class="space-y-3">
+        <div id="redFlagsContainer" aria-live="polite" class="space-y-3">
           <!-- Populated by JS -->
         </div>
       </div>
@@ -345,20 +354,20 @@
       <!-- Immediate Action Checklist -->
       <div class="bg-indigo-950/40 border border-indigo-900/50 rounded-2xl p-5">
         <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center space-x-2 mb-3">
-          <i data-lucide="list-checks" class="w-4 h-4"></i>
+          <i data-lucide="list-checks" class="w-4 h-4" aria-hidden="true"></i>
           <span>Recommended Pre-Signing Action Checklist</span>
         </h4>
         <ul id="actionChecklist" class="space-y-2 text-xs text-slate-200">
           <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
             <span>Request mutual liability cap equal to 12 months fees paid.</span>
           </li>
           <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
             <span>Carve out Contractor Tools and pre-existing libraries from Section 4.</span>
           </li>
           <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
             <span>Shorten payment terms from Net-60 to Net-30 and make termination notice mutual (30 days).</span>
           </li>
         </ul>
@@ -369,20 +378,20 @@
     <!-- ======================================================== -->
     <!-- TAB 2: CONTRACT REDLINER (DIFF ENGINE) -->
     <!-- ======================================================== -->
-    <div id="tab-redline" class="tab-content hidden space-y-6">
+    <div role="tabpanel" id="tab-redline" aria-labelledby="tab-btn-redline" class="tab-content hidden space-y-6">
       
       <!-- Redline Controls -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div>
             <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <i data-lucide="git-compare" class="w-5 h-5 text-indigo-400"></i>
+              <i data-lucide="git-compare" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
               <span>Semantic Contract Redliner & Diff Engine</span>
             </h3>
             <p class="text-xs text-slate-400">Detects substantive legal intent alterations between two versions (not just word typos).</p>
           </div>
-          <button id="runComparisonBtn" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition self-start">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <button id="runComparisonBtn" aria-label="Compare Version 1 and Version 2 contracts" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition self-start focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
             <span>Compare Versions</span>
           </button>
         </div>
@@ -391,23 +400,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
-              <span>Version 1 (Original / Baseline)</span>
-              <button onclick="loadSampleContractV1()" class="text-indigo-400 hover:underline">Load Standard MSA</button>
+              <label for="diffTextA">Version 1 (Original / Baseline)</label>
+              <button onclick="loadSampleContractV1()" class="text-indigo-400 hover:underline focus:outline-none">Load Standard MSA</button>
             </div>
-            <textarea id="diffTextA" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500" placeholder="Paste Version 1 text..."></textarea>
+            <textarea id="diffTextA" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Paste Version 1 text..."></textarea>
           </div>
           <div>
             <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
-              <span>Version 2 (Counterparty Redline Markup)</span>
-              <button onclick="loadSampleContractV2()" class="text-indigo-400 hover:underline">Load Revised Redline v2</button>
+              <label for="diffTextB">Version 2 (Counterparty Redline Markup)</label>
+              <button onclick="loadSampleContractV2()" class="text-indigo-400 hover:underline focus:outline-none">Load Revised Redline v2</button>
             </div>
-            <textarea id="diffTextB" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500" placeholder="Paste Version 2 text..."></textarea>
+            <textarea id="diffTextB" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Paste Version 2 text..."></textarea>
           </div>
         </div>
       </div>
 
       <!-- Redline Results Container -->
-      <div id="redlineResults" class="space-y-4">
+      <div id="redlineResults" aria-live="polite" class="space-y-4">
         
         <!-- Score Delta & Summary Banner -->
         <div class="bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -439,7 +448,7 @@
     <!-- ======================================================== -->
     <!-- TAB 3: CLAUSE INTERROGATOR (GROUNDED COPILOT) -->
     <!-- ======================================================== -->
-    <div id="tab-interrogate" class="tab-content hidden space-y-4">
+    <div role="tabpanel" id="tab-interrogate" aria-labelledby="tab-btn-interrogate" class="tab-content hidden space-y-4">
       
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col h-[600px]">
         
@@ -447,27 +456,27 @@
         <div class="border-b border-slate-800 pb-3 mb-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
-              <i data-lucide="message-square-quote" class="w-5 h-5 text-sky-400"></i>
+              <i data-lucide="message-square-quote" class="w-5 h-5 text-sky-400" aria-hidden="true"></i>
               <h3 class="text-sm font-bold text-white">Grounded Legal Clause Interrogator</h3>
             </div>
             <span class="text-[11px] text-slate-400">Answers strictly cited from active contract</span>
           </div>
 
           <!-- Quick Query Prompt Chips -->
-          <div class="flex flex-wrap gap-1.5 mt-3">
-            <button onclick="askInterrogator('Can they terminate without cause and what notice is required?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Can they terminate without cause?</button>
-            <button onclick="askInterrogator('Who owns the code and intellectual property?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Who owns the code / IP?</button>
-            <button onclick="askInterrogator('What are the payment deadlines and penalties if overdue?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Payment terms & late fees?</button>
-            <button onclick="askInterrogator('Is there an uncapped indemnification or liability trap?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition">Is there an uncapped indemnity trap?</button>
+          <div class="flex flex-wrap gap-1.5 mt-3" role="group" aria-label="Quick inquiry prompts">
+            <button onclick="askInterrogator('Can they terminate without cause and what notice is required?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Can they terminate without cause?</button>
+            <button onclick="askInterrogator('Who owns the code and intellectual property?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Who owns the code / IP?</button>
+            <button onclick="askInterrogator('What are the payment deadlines and penalties if overdue?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Payment terms & late fees?</button>
+            <button onclick="askInterrogator('Is there an uncapped indemnification or liability trap?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Is there an uncapped indemnity trap?</button>
           </div>
         </div>
 
         <!-- Chat Conversation Area -->
-        <div id="interrogateMessages" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+        <div id="interrogateMessages" role="log" aria-live="polite" aria-label="Clause Interrogator conversation history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
           <!-- Initial Welcome Message -->
           <div class="flex items-start space-x-3">
-            <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0">
-              <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+            <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0" aria-hidden="true">
+              <i data-lucide="bot" class="w-4 h-4 text-white" aria-hidden="true"></i>
             </div>
             <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-2xl max-w-2xl text-slate-200 space-y-2">
               <p>Hello! I am your Legal Copilot. I have indexed the active contract. You can ask me any question—such as payment terms, non-compete obligations, or hidden liabilities—and I will answer with exact clause citations.</p>
@@ -477,10 +486,11 @@
 
         <!-- Input Box -->
         <div class="pt-3 border-t border-slate-800 mt-2">
-          <form id="interrogateForm" class="flex space-x-2">
-            <input type="text" id="interrogateInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500" placeholder="Ask any question about this contract (e.g., 'What happens if I get sued by a third party?')...">
-            <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition">
-              <i data-lucide="send" class="w-4 h-4"></i>
+          <form id="interrogateForm" class="flex space-x-2" aria-label="Ask Legal Copilot a question">
+            <label for="interrogateInput" class="sr-only">Ask any question about this contract</label>
+            <input type="text" id="interrogateInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" placeholder="Ask any question about this contract (e.g., 'What happens if I get sued by a third party?')...">
+            <button type="submit" aria-label="Send question" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition focus:outline-none focus:ring-2 focus:ring-sky-400">
+              <i data-lucide="send" class="w-4 h-4" aria-hidden="true"></i>
               <span>Ask</span>
             </button>
           </form>
@@ -493,37 +503,38 @@
     <!-- ======================================================== -->
     <!-- TAB 4: "WHAT-IF" SCENARIO SIMULATOR -->
     <!-- ======================================================== -->
-    <div id="tab-simulator" class="tab-content hidden space-y-6">
+    <div role="tabpanel" id="tab-simulator" aria-labelledby="tab-btn-simulator" class="tab-content hidden space-y-6">
       
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div>
           <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i>
+            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400" aria-hidden="true"></i>
             <span>"What-If" Dispute & Scenario Simulator</span>
           </h3>
           <p class="text-xs text-slate-400">Stress-test real-world hypothetical disputes against this contract's clauses before you sign.</p>
         </div>
 
         <!-- Preset Scenario Buttons -->
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Scenario presets">
           <span class="text-xs text-slate-400 self-center">Try presets:</span>
-          <button onclick="setScenario('What if the client delays milestone payment by 60 days and ignores my emails?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Client 60-day late payment</button>
-          <button onclick="setScenario('What if I terminate the contract after 3 months because the client changed the project scope?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Early contractor termination</button>
-          <button onclick="setScenario('What if a third party sues claiming an open-source library I used infringes their patent?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">Third-party IP lawsuit</button>
+          <button onclick="setScenario('What if the client delays milestone payment by 60 days and ignores my emails?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Client 60-day late payment</button>
+          <button onclick="setScenario('What if I terminate the contract after 3 months because the client changed the project scope?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Early contractor termination</button>
+          <button onclick="setScenario('What if a third party sues claiming an open-source library I used infringes their patent?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Third-party IP lawsuit</button>
         </div>
 
         <!-- Custom Scenario Form -->
-        <form id="scenarioForm" class="space-y-3">
-          <textarea id="scenarioInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-amber-500" placeholder="Type a scenario (e.g., 'What happens if the client demands unlimited revisions without extra pay?')..."></textarea>
-          <button type="submit" class="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-amber-600/30 transition">
-            <i data-lucide="play" class="w-4 h-4"></i>
+        <form id="scenarioForm" class="space-y-3" aria-label="Hypothetical scenario simulation form">
+          <label for="scenarioInput" class="sr-only">Type a scenario description</label>
+          <textarea id="scenarioInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="Type a scenario (e.g., 'What happens if the client demands unlimited revisions without extra pay?')..."></textarea>
+          <button type="submit" aria-label="Run scenario simulation" class="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-amber-600/30 transition focus:outline-none focus:ring-2 focus:ring-amber-400">
+            <i data-lucide="play" class="w-4 h-4" aria-hidden="true"></i>
             <span>Simulate Scenario Outcome</span>
           </button>
         </form>
       </div>
 
       <!-- Simulation Results Card -->
-      <div id="scenarioResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+      <div id="scenarioResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
         
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-4">
           <div>
@@ -549,7 +560,7 @@
           <!-- Step-by-Step Action Plan -->
           <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800">
             <h5 class="text-xs font-bold text-emerald-400 uppercase mb-2 flex items-center space-x-1.5">
-              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <i data-lucide="check-circle-2" class="w-4 h-4" aria-hidden="true"></i>
               <span>Step-by-Step Strategic Action Plan</span>
             </h5>
             <ul id="scenarioActionPlan" class="space-y-2 text-xs text-slate-300">
@@ -562,7 +573,7 @@
           <!-- Traps to Avoid -->
           <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
             <h5 class="text-xs font-bold text-rose-400 uppercase mb-2 flex items-center space-x-1.5">
-              <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+              <i data-lucide="alert-octagon" class="w-4 h-4" aria-hidden="true"></i>
               <span>Critical Traps to Avoid</span>
             </h5>
             <ul id="scenarioTraps" class="space-y-2 text-xs text-slate-300">
@@ -579,35 +590,35 @@
     <!-- ======================================================== -->
     <!-- TAB 5: COUNTER-CLAUSE DRAFTER (NEGOTIATOR COPILOT) -->
     <!-- ======================================================== -->
-    <div id="tab-redraft" class="tab-content hidden space-y-6">
+    <div role="tabpanel" id="tab-redraft" aria-labelledby="tab-btn-redraft" class="tab-content hidden space-y-6">
       
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div>
           <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="pencil-ruler" class="w-5 h-5 text-fuchsia-400"></i>
+            <i data-lucide="pencil-ruler" class="w-5 h-5 text-fuchsia-400" aria-hidden="true"></i>
             <span>AI Smart Counter-Clause Drafter & Negotiation Copilot</span>
           </h3>
           <p class="text-xs text-slate-400">Transform any one-sided or unfair clause into a balanced, legally enforceable counter-proposal.</p>
         </div>
 
-        <form id="redraftForm" class="space-y-4">
+        <form id="redraftForm" class="space-y-4" aria-label="Counter-clause generator form">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Clause to Redraft (Paste or select from red flags):</label>
-            <textarea id="redraftClauseInput" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-fuchsia-500" placeholder="Paste the unfair clause here..."></textarea>
+            <label for="redraftClauseInput" class="block text-xs font-semibold text-slate-300 mb-1">Clause to Redraft (Paste or select from red flags):</label>
+            <textarea id="redraftClauseInput" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500" placeholder="Paste the unfair clause here..."></textarea>
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-slate-400">Negotiation Strategy:</span>
-              <select id="redraftGoalSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-fuchsia-500">
+              <label for="redraftGoalSelect" class="text-xs text-slate-400">Negotiation Strategy:</label>
+              <select id="redraftGoalSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500">
                 <option value="balanced">Mutual / Fair & Balanced (Standard Industry Practice)</option>
                 <option value="protective">User-Protective (Aggressive Safeguards)</option>
                 <option value="plain_english">Plain-English / Simplified Language</option>
               </select>
             </div>
 
-            <button type="submit" class="flex items-center space-x-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-fuchsia-600/30 transition">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <button type="submit" aria-label="Generate counter-clause replacement" class="flex items-center space-x-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-fuchsia-600/30 transition focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+              <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
               <span>Generate Counter-Clause</span>
             </button>
           </div>
@@ -615,7 +626,7 @@
       </div>
 
       <!-- Redraft Output Card -->
-      <div id="redraftResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+      <div id="redraftResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
         
         <!-- Critique -->
         <div>
@@ -627,11 +638,11 @@
         <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
-              <i data-lucide="check-check" class="w-4 h-4"></i>
+              <i data-lucide="check-check" class="w-4 h-4" aria-hidden="true"></i>
               <span>Recommended Replacement Legal Wording</span>
             </span>
-            <button onclick="copyElementText('redraftWording')" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <button onclick="copyElementText('redraftWording')" aria-label="Copy replacement clause wording" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
               <span>Copy Clause</span>
             </button>
           </div>
@@ -647,11 +658,11 @@
         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-indigo-400 flex items-center space-x-1.5">
-              <i data-lucide="mail" class="w-4 h-4"></i>
+              <i data-lucide="mail" class="w-4 h-4" aria-hidden="true"></i>
               <span>Ready-to-Send Negotiation Email Justification</span>
             </span>
-            <button onclick="copyElementText('redraftEmailPitch')" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <button onclick="copyElementText('redraftEmailPitch')" aria-label="Copy negotiation email pitch" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-400">
+              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
               <span>Copy Email</span>
             </button>
           </div>
@@ -674,22 +685,22 @@ Best regards,
     <!-- ======================================================== -->
     <!-- TAB 6: MULTILINGUAL ACCESS ENGINE -->
     <!-- ======================================================== -->
-    <div id="tab-multilingual" class="tab-content hidden space-y-6">
+    <div role="tabpanel" id="tab-multilingual" aria-labelledby="tab-btn-multilingual" class="tab-content hidden space-y-6">
       
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div>
           <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="languages" class="w-5 h-5 text-teal-400"></i>
+            <i data-lucide="languages" class="w-5 h-5 text-teal-400" aria-hidden="true"></i>
             <span>Multilingual Legal Access (Democratizing Legal Understanding)</span>
           </h3>
           <p class="text-xs text-slate-400">Translates complex legal jargon into plain regional language so everyday citizens and non-native speakers understand their rights.</p>
         </div>
 
-        <form id="translateForm" class="space-y-4">
+        <form id="translateForm" class="space-y-4" aria-label="Language translation form">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-2">
-              <span class="text-xs text-slate-300 font-semibold">Select Target Language:</span>
-              <select id="targetLanguageSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500">
+              <label for="targetLanguageSelect" class="text-xs text-slate-300 font-semibold">Select Target Language:</label>
+              <select id="targetLanguageSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
                 <option value="Hindi">Hindi (हिन्दी)</option>
                 <option value="Spanish">Spanish (Español)</option>
                 <option value="French">French (Français)</option>
@@ -701,8 +712,8 @@ Best regards,
               </select>
             </div>
 
-            <button type="submit" class="flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-teal-600/30 transition">
-              <i data-lucide="globe" class="w-4 h-4"></i>
+            <button type="submit" aria-label="Translate and explain legal document" class="flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-teal-600/30 transition focus:outline-none focus:ring-2 focus:ring-teal-400">
+              <i data-lucide="globe" class="w-4 h-4" aria-hidden="true"></i>
               <span>Translate & Explain</span>
             </button>
           </div>
@@ -710,7 +721,7 @@ Best regards,
       </div>
 
       <!-- Translation Results -->
-      <div id="translationResults" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+      <div id="translationResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
         
         <div>
           <span id="transTargetLangBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-teal-950 text-teal-300 border border-teal-800">Hindi (हिन्दी)</span>
@@ -748,19 +759,19 @@ Best regards,
   </main>
 
   <!-- ======================================================== -->
-  <!-- MODAL: GROQ API KEY CONFIGURATION -->
+  <!-- MODAL: GROQ API KEY CONFIGURATION (WCAG 2.1 Dialog) -->
   <!-- ======================================================== -->
-  <div id="apiKeyModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="apiKeyModal" role="dialog" aria-modal="true" aria-labelledby="apiKeyModalTitle" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400">
+          <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400" aria-hidden="true">
             <i data-lucide="key" class="w-5 h-5"></i>
           </div>
-          <h3 class="text-base font-bold text-white">Groq API Key Settings</h3>
+          <h3 id="apiKeyModalTitle" class="text-base font-bold text-white">Groq API Key Settings</h3>
         </div>
-        <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeApiKeyModal()" aria-label="Close API Key dialog" class="text-slate-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
+          <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
         </button>
       </div>
 
@@ -769,9 +780,9 @@ Best regards,
       </p>
 
       <div class="space-y-2">
-        <label class="text-xs font-semibold text-slate-300">Your Groq API Key:</label>
-        <input type="password" id="groqApiKeyInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono" placeholder="gsk_...">
-        <p class="text-[11px] text-slate-500">Don't have a key? Get one for free in 30 seconds at <a href="https://console.groq.com/keys" target="_blank" class="text-indigo-400 hover:underline">console.groq.com</a>.</p>
+        <label for="groqApiKeyInput" class="text-xs font-semibold text-slate-300">Your Groq API Key:</label>
+        <input type="password" id="groqApiKeyInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono" placeholder="gsk_...">
+        <p class="text-[11px] text-slate-500">Don't have a key? Get one for free in 30 seconds at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">console.groq.com</a>.</p>
       </div>
 
       <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-400">
@@ -779,40 +790,40 @@ Best regards,
       </div>
 
       <div class="flex justify-end space-x-2 pt-2">
-        <button onclick="clearApiKey()" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white rounded-lg transition">Clear Key</button>
-        <button onclick="saveApiKey()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-md transition">Save & Apply</button>
+        <button onclick="clearApiKey()" aria-label="Clear active API Key" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white rounded-lg transition focus:outline-none">Clear Key</button>
+        <button onclick="saveApiKey()" aria-label="Save and apply API Key" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-md transition focus:outline-none focus:ring-2 focus:ring-indigo-400">Save & Apply</button>
       </div>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- MODAL: EXPORT AUDIT REPORT -->
+  <!-- MODAL: EXPORT AUDIT REPORT (WCAG 2.1 Dialog) -->
   <!-- ======================================================== -->
-  <div id="exportModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2">
-          <i data-lucide="file-check" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-base font-bold text-white">Comprehensive Legal Audit Report</h3>
+          <i data-lucide="file-check" class="w-5 h-5 text-emerald-400" aria-hidden="true"></i>
+          <h3 id="exportModalTitle" class="text-base font-bold text-white">Comprehensive Legal Audit Report</h3>
         </div>
-        <button onclick="closeExportModal()" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeExportModal()" aria-label="Close export report dialog" class="text-slate-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-emerald-400">
+          <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto pr-1">
-        <pre id="auditReportMarkdown" class="text-xs font-mono text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap leading-relaxed"></pre>
+        <pre id="auditReportMarkdown" aria-label="Generated audit report text" class="text-xs font-mono text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap leading-relaxed"></pre>
       </div>
 
       <div class="flex items-center justify-between pt-3 border-t border-slate-800">
         <span class="text-xs text-slate-400">Formatted and ready for legal counsel review</span>
         <div class="flex space-x-2">
-          <button onclick="copyElementText('auditReportMarkdown')" class="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center space-x-1">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <button onclick="copyElementText('auditReportMarkdown')" aria-label="Copy markdown text" class="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center space-x-1 focus:outline-none focus:ring-1 focus:ring-slate-400">
+            <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
             <span>Copy Markdown</span>
           </button>
-          <button onclick="window.print()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition flex items-center space-x-1">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <button onclick="window.print()" aria-label="Print or save as PDF" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition flex items-center space-x-1 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+            <i data-lucide="printer" class="w-3.5 h-3.5" aria-hidden="true"></i>
             <span>Print / Save PDF</span>
           </button>
         </div>
@@ -827,7 +838,7 @@ Best regards,
       <div class="flex items-center space-x-4">
         <span>Powered by Groq LPU & LLaMA 3.3 70B</span>
         <span>•</span>
-        <a href="https://github.com" target="_blank" class="hover:text-slate-300">GitHub Repo (&lt;10MB)</a>
+        <span>Repository Footprint: &lt;10MB</span>
       </div>
     </div>
   </footer>

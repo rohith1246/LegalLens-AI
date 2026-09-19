@@ -187,12 +187,15 @@ function getAuthHeaders() {
 }
 
 // ============================================================
-// TAB NAVIGATION
+// TAB NAVIGATION (WCAG 2.1 Accessible)
 // ============================================================
 function switchTab(tabId) {
-  // Tab buttons styling
+  // Tab buttons styling and ARIA states
   document.querySelectorAll(".tab-btn").forEach(btn => {
-    if (btn.getAttribute("data-tab") === tabId) {
+    const isCurrent = btn.getAttribute("data-tab") === tabId;
+    btn.setAttribute("aria-selected", isCurrent ? "true" : "false");
+    btn.tabIndex = isCurrent ? 0 : -1;
+    if (isCurrent) {
       btn.classList.add("active", "border-indigo-500", "text-white", "bg-slate-900/60");
       btn.classList.remove("border-transparent", "text-slate-400");
     } else {
@@ -268,12 +271,19 @@ function updateCharCount() {
 
 function toggleInspector() {
   const inspector = document.getElementById("contractInspector");
+  const btn = document.getElementById("toggleInspectorBtn");
   const btnText = document.getElementById("inspectorBtnText");
-  if (inspector.classList.contains("hidden")) {
+  const isHidden = inspector.classList.contains("hidden");
+  
+  if (isHidden) {
     inspector.classList.remove("hidden");
+    inspector.setAttribute("aria-hidden", "false");
+    btn.setAttribute("aria-expanded", "true");
     btnText.innerText = "Hide Contract Text";
   } else {
     inspector.classList.add("hidden");
+    inspector.setAttribute("aria-hidden", "true");
+    btn.setAttribute("aria-expanded", "false");
     btnText.innerText = "View Contract Text";
   }
 }
@@ -461,12 +471,16 @@ function setExplainerMode(mode) {
   const execBtn = document.getElementById("viewExecBtn");
 
   if (mode === "eli5") {
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition";
-    execBtn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition";
+    eli5Btn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    eli5Btn.setAttribute("aria-checked", "true");
+    execBtn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    execBtn.setAttribute("aria-checked", "false");
     document.getElementById("summaryHeading").innerText = "Layman's Plain-English Breakdown";
   } else {
-    execBtn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition";
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition";
+    execBtn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    execBtn.setAttribute("aria-checked", "true");
+    eli5Btn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    eli5Btn.setAttribute("aria-checked", "false");
     document.getElementById("summaryHeading").innerText = "Executive Commercial Summary";
   }
 
