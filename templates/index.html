@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="en" class="h-full bg-slate-50 text-slate-900">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
     }
   </script>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
 
   <!-- ACCESSIBILITY: Skip to main content link -->
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white">
@@ -41,27 +41,27 @@
   </a>
 
   <!-- TOP NAVIGATION HEADER -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-slate-200 bg-white/95 backdrop-blur sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       
       <!-- Brand & Track Badge -->
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/20" aria-hidden="true">
-          <i data-lucide="scale" class="w-6 h-6 text-white" aria-hidden="true"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white" aria-hidden="true">
+          <i data-lucide="scale" class="w-6 h-6" aria-hidden="true"></i>
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">LegalLens AI</h1>
-            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800/60">PromptWars 2026</span>
+            <h1 class="font-extrabold text-lg tracking-tight text-slate-900">LegalLens AI</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">PromptWars 2026</span>
           </div>
-          <p class="text-xs text-slate-400 hidden sm:block">AI for Legal Assistance & Access • Built for Google for Developers Track</p>
+          <p class="text-xs text-slate-500 hidden sm:block">AI for Legal Assistance & Access • Built for Google for Developers Track</p>
         </div>
       </div>
 
       <!-- Center Status Badge -->
-      <div class="hidden md:flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 px-3 py-1.5 rounded-full text-xs" role="status" aria-live="polite">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
-        <span class="text-slate-300" id="engineStatusLabel">Engine: Groq LLaMA 3.3 70B (Fast LPU)</span>
+      <div class="hidden md:flex items-center space-x-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700" role="status" aria-live="polite">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
+        <span id="engineStatusLabel">Engine: Groq LLaMA 3.3 70B (Fast LPU)</span>
       </div>
 
       <!-- Action Controls -->
@@ -69,40 +69,40 @@
         
         <!-- Sample Contracts Dropdown -->
         <div class="relative inline-block text-left">
-          <button id="sampleDropdownBtn" aria-haspopup="true" aria-expanded="false" aria-label="Load pre-loaded sample test contracts" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
-            <span>Load Samples</span>
+          <button id="sampleDropdownBtn" aria-haspopup="true" aria-expanded="false" aria-label="Load pre-loaded sample test contracts" class="flex items-center space-x-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <i data-lucide="file-text" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+            <span>Samples</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400" aria-hidden="true"></i>
           </button>
-          <div id="sampleDropdownMenu" role="menu" aria-label="Sample Contracts Menu" class="hidden absolute right-0 mt-2 w-72 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl z-50 p-2 space-y-1">
-            <div class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Pre-Loaded Test Contracts</div>
-            <button role="menuitem" onclick="loadSampleContract('msa_freelance')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
-              <span class="font-semibold text-white">Freelance MSA (High Risk)</span>
-              <span class="text-[11px] text-amber-400">Uncapped indemnity, Net-60, IP traps</span>
+          <div id="sampleDropdownMenu" role="menu" aria-label="Sample Contracts Menu" class="hidden absolute right-0 mt-2 w-72 rounded-xl bg-white border border-slate-200 shadow-2xl z-50 p-2 space-y-1">
+            <div class="px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Pre-Loaded Test Contracts</div>
+            <button role="menuitem" onclick="loadSampleContract('msa_freelance')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-50 text-slate-800 flex flex-col focus:outline-none focus:bg-slate-100">
+              <span class="font-bold text-slate-900">Freelance MSA (High Risk)</span>
+              <span class="text-[11px] text-rose-600 font-medium">Uncapped indemnity, Net-60, IP traps</span>
             </button>
-            <button role="menuitem" onclick="loadSampleContract('saas_tos')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
-              <span class="font-semibold text-white">Enterprise SaaS Terms of Service</span>
-              <span class="text-[11px] text-amber-400">Auto-renewal trap, unilateral price hike</span>
+            <button role="menuitem" onclick="loadSampleContract('saas_tos')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-50 text-slate-800 flex flex-col focus:outline-none focus:bg-slate-100">
+              <span class="font-bold text-slate-900">Enterprise SaaS Terms of Service</span>
+              <span class="text-[11px] text-amber-600 font-medium">Auto-renewal trap, unilateral price hike</span>
             </button>
-            <button role="menuitem" onclick="loadSampleContract('residential_lease')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-800 text-slate-200 flex flex-col focus:outline-none focus:bg-slate-800">
-              <span class="font-semibold text-white">Residential Tenancy Lease</span>
-              <span class="text-[11px] text-amber-400">Landlord entry, non-refundable deposit</span>
+            <button role="menuitem" onclick="loadSampleContract('residential_lease')" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-slate-50 text-slate-800 flex flex-col focus:outline-none focus:bg-slate-100">
+              <span class="font-bold text-slate-900">Residential Tenancy Lease</span>
+              <span class="text-[11px] text-amber-600 font-medium">Landlord entry, non-refundable deposit</span>
             </button>
-            <button role="menuitem" onclick="loadRedlineComparisonSamples()" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-indigo-950/60 text-indigo-300 border border-indigo-900/50 flex flex-col mt-1 focus:outline-none focus:bg-indigo-950">
-              <span class="font-semibold text-indigo-200">Load V1 vs V2 Redline Pair</span>
-              <span class="text-[11px] text-indigo-400">For Contract Comparison tab</span>
+            <button role="menuitem" onclick="loadRedlineComparisonSamples()" class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-indigo-50 text-indigo-800 border border-indigo-100 flex flex-col mt-1 focus:outline-none focus:bg-indigo-50">
+              <span class="font-bold text-indigo-700">Load V1 vs V2 Redline Pair</span>
+              <span class="text-[11px] text-indigo-600">For Contract Comparison module</span>
             </button>
           </div>
         </div>
 
         <!-- API Key Settings Button -->
-        <button id="apiKeyModalBtn" aria-label="Configure Groq API Key" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <i data-lucide="key" class="w-4 h-4 text-amber-400" aria-hidden="true"></i>
+        <button id="apiKeyModalBtn" aria-label="Configure Groq API Key" class="flex items-center space-x-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <i data-lucide="key" class="w-4 h-4 text-amber-500" aria-hidden="true"></i>
           <span class="hidden sm:inline">Groq API Key</span>
         </button>
 
         <!-- Export Report Button -->
-        <button id="exportReportBtn" aria-label="Export comprehensive legal audit report" class="flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-md shadow-emerald-900/30 transition focus:outline-none focus:ring-2 focus:ring-emerald-400">
+        <button id="exportReportBtn" aria-label="Export comprehensive legal audit report" class="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-500">
           <i data-lucide="download" class="w-4 h-4" aria-hidden="true"></i>
           <span class="hidden sm:inline">Export Audit</span>
         </button>
@@ -114,559 +114,763 @@
   <!-- MAIN CONTAINER -->
   <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- INPUT & DOCUMENT WORKSPACE BAR -->
-    <section aria-labelledby="activeContractTitle" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <!-- ======================================================== -->
+    <!-- INTERACTIVE WORKFLOW STEPPER BAR -->
+    <!-- ======================================================== -->
+    <nav aria-label="Analysis Workflow Stepper" class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         
-        <!-- Left: Contract Title & Metadata -->
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-slate-800 rounded-xl border border-slate-700" aria-hidden="true">
-            <i data-lucide="file-check-2" class="w-6 h-6 text-emerald-400" aria-hidden="true"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h2 id="activeContractTitle" class="text-base sm:text-lg font-bold text-white">Freelance Master Services Agreement (MSA)</h2>
-              <span id="activeContractCategory" class="px-2 py-0.5 text-[11px] font-semibold bg-slate-800 text-slate-300 rounded-md border border-slate-700">Services & Contractor</span>
+        <!-- 3-Step Visual Progress Stepper -->
+        <ol class="flex items-center w-full max-w-3xl justify-between" role="list">
+          
+          <!-- Step 1: Ingest Document -->
+          <li id="stepper-step-1" class="step-item active flex items-center cursor-pointer group" onclick="goToWorkflowStep(1)">
+            <span class="step-circle w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all group-hover:scale-105" aria-hidden="true">1</span>
+            <div class="ml-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-600" id="step1-tag">Step 1</div>
+              <div class="text-xs sm:text-sm font-extrabold text-slate-900">Ingest Document</div>
             </div>
-            <p id="activeContractParties" class="text-xs text-slate-400">Parties: Acme Innovations Inc. & Alex Rivera (Contractor)</p>
-          </div>
-        </div>
+          </li>
+          
+          <div class="flex-1 h-0.5 mx-2 sm:mx-4 bg-slate-200" id="step-connector-1"></div>
 
-        <!-- Right: Actions (Upload, Toggle Raw Text Inspector, Re-Analyze) -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- File Upload Button -->
-          <label for="fileUploadInput" class="cursor-pointer flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus-within:ring-2 focus-within:ring-indigo-500">
-            <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
-            <span>Upload PDF / DOCX / TXT</span>
-            <input type="file" id="fileUploadInput" class="sr-only" accept=".pdf,.docx,.doc,.txt,.md" aria-label="Upload PDF, DOCX, or TXT contract file">
-          </label>
+          <!-- Step 2: Choose AI Objective -->
+          <li id="stepper-step-2" class="step-item flex items-center cursor-pointer group" onclick="goToWorkflowStep(2)">
+            <span class="step-circle w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-300 flex items-center justify-center font-bold text-sm transition-all group-hover:scale-105" aria-hidden="true">2</span>
+            <div class="ml-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500" id="step2-tag">Step 2</div>
+              <div class="text-xs sm:text-sm font-extrabold text-slate-700">Choose Objective</div>
+            </div>
+          </li>
 
-          <!-- Toggle Document Inspector -->
-          <button id="toggleInspectorBtn" aria-expanded="false" aria-controls="contractInspector" class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <i data-lucide="eye" class="w-4 h-4 text-slate-400" aria-hidden="true"></i>
-            <span id="inspectorBtnText">View Contract Text</span>
+          <div class="flex-1 h-0.5 mx-2 sm:mx-4 bg-slate-200" id="step-connector-2"></div>
+
+          <!-- Step 3: Executive Intelligence -->
+          <li id="stepper-step-3" class="step-item flex items-center cursor-pointer group" onclick="goToWorkflowStep(3)">
+            <span class="step-circle w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-300 flex items-center justify-center font-bold text-sm transition-all group-hover:scale-105" aria-hidden="true">3</span>
+            <div class="ml-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500" id="step3-tag">Step 3</div>
+              <div class="text-xs sm:text-sm font-extrabold text-slate-700">Executive Insights</div>
+            </div>
+          </li>
+
+        </ol>
+
+        <!-- Dynamic Stepper Action Controls -->
+        <div class="flex items-center space-x-2 shrink-0 self-end lg:self-center">
+          <button id="workflowBackBtn" onclick="prevWorkflowStep()" class="hidden px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            ← Back
           </button>
-
-          <!-- Run Full Analysis Button -->
-          <button id="runAnalysisBtn" aria-label="Run full AI contract audit" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
-            <span>Run Full AI Audit</span>
+          <button id="workflowNextBtn" onclick="nextWorkflowStep()" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition flex items-center space-x-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <span id="workflowNextText">Select AI Objective</span>
+            <span>→</span>
           </button>
         </div>
-
-      </div>
-
-      <!-- Collapsible Contract Inspector Drawer -->
-      <div id="contractInspector" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-2" aria-hidden="true">
-        <div class="flex items-center justify-between text-xs text-slate-400">
-          <label for="contractTextInput" class="font-medium">Active Contract Text (Click citation badges in analysis tabs to jump to clauses)</label>
-          <div class="flex items-center space-x-3">
-            <span id="charCountLabel">0 characters</span>
-            <button onclick="copyContractText()" aria-label="Copy active contract text" class="hover:text-white flex items-center space-x-1 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
-              <span>Copy</span>
-            </button>
-          </div>
-        </div>
-        <textarea id="contractTextInput" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 leading-relaxed" placeholder="Paste or view contract clauses here..."></textarea>
-      </div>
-
-    </section>
-
-    <!-- MAIN FEATURE TABS NAVIGATION (WCAG 2.1 Tablist) -->
-    <nav aria-label="Legal AI analysis modules" class="border-b border-slate-800">
-      <div role="tablist" class="flex space-x-2 sm:space-x-4 overflow-x-auto pb-1 text-sm font-medium scrollbar-none">
-        
-        <button role="tab" id="tab-btn-simplifier" aria-selected="true" aria-controls="tab-simplifier" class="tab-btn active flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-indigo-500 text-white bg-slate-900/60 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simplifier">
-          <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
-          <span>Simplifier & Risk Radar</span>
-        </button>
-
-        <button role="tab" id="tab-btn-redline" aria-selected="false" aria-controls="tab-redline" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redline">
-          <i data-lucide="git-compare" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
-          <span>Contract Redliner (Diff)</span>
-        </button>
-
-        <button role="tab" id="tab-btn-interrogate" aria-selected="false" aria-controls="tab-interrogate" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-interrogate">
-          <i data-lucide="message-square-quote" class="w-4 h-4 text-sky-400" aria-hidden="true"></i>
-          <span>Clause Interrogator</span>
-        </button>
-
-        <button role="tab" id="tab-btn-simulator" aria-selected="false" aria-controls="tab-simulator" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simulator">
-          <i data-lucide="help-circle" class="w-4 h-4 text-amber-400" aria-hidden="true"></i>
-          <span>"What-If" Simulator</span>
-        </button>
-
-        <button role="tab" id="tab-btn-redraft" aria-selected="false" aria-controls="tab-redraft" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redraft">
-          <i data-lucide="pencil-ruler" class="w-4 h-4 text-fuchsia-400" aria-hidden="true"></i>
-          <span>Counter-Clause Drafter</span>
-        </button>
-
-        <button role="tab" id="tab-btn-multilingual" aria-selected="false" aria-controls="tab-multilingual" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-t-xl border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-multilingual">
-          <i data-lucide="languages" class="w-4 h-4 text-teal-400" aria-hidden="true"></i>
-          <span>Multilingual Access</span>
-        </button>
 
       </div>
     </nav>
 
-    <!-- TAB CONTENTS -->
-
     <!-- ======================================================== -->
-    <!-- TAB 1: SIMPLIFIER & RISK RADAR -->
+    <!-- WORKFLOW STEP 1: INGEST DOCUMENT & TEST BENCH -->
     <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-simplifier" aria-labelledby="tab-btn-simplifier" class="tab-content space-y-6">
+    <section id="workflow-step-1" aria-labelledby="activeContractTitle" class="space-y-6">
       
-      <!-- Top Row: Score Gauge & Key Metrics -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Risk Health Score Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-xl" role="region" aria-label="Overall contract safety evaluation">
-          <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl" aria-hidden="true"></div>
-          <div class="text-xs uppercase font-semibold tracking-wider text-slate-400 mb-2">Overall Contract Health Score</div>
+      <!-- Ingestion Header & Current Loaded Contract -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           
-          <!-- Circular Gauge -->
-          <div class="relative w-36 h-36 flex items-center justify-center my-2" role="img" aria-label="Contract Health Score Meter">
-            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
-              <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="none"/>
-              <circle id="scoreMeterCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-amber-500 transition-all duration-1000" fill="none" stroke-dasharray="264" stroke-dashoffset="140" stroke-linecap="round"/>
-            </svg>
-            <div class="absolute flex flex-col items-center" aria-live="polite">
-              <span id="scoreDisplay" class="text-4xl font-black tracking-tight text-white">48</span>
-              <span class="text-[10px] uppercase font-bold text-slate-400">/ 100</span>
+          <!-- Contract Title & Metadata -->
+          <div class="flex items-center space-x-3.5">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100" aria-hidden="true">
+              <i data-lucide="file-check-2" class="w-6 h-6" aria-hidden="true"></i>
             </div>
-          </div>
-
-          <div id="riskTierBadge" class="mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800" role="status">High Risk Exposure</div>
-          <p class="text-xs text-slate-400 mt-2">Significant legal asymmetries and liability traps detected.</p>
-        </div>
-
-        <!-- 4 Key Contract Commitments -->
-        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
-              <i data-lucide="key-round" class="w-4 h-4 text-emerald-400" aria-hidden="true"></i>
-              <span>Core Commercial Terms & Legal Commitments</span>
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
-                <span class="text-[11px] font-medium text-slate-400 block mb-1">Financial Exposure</span>
-                <p id="metricFinancial" class="text-xs font-semibold text-rose-300">Contractor: Unlimited liability & uncapped indemnity; Client: Capped at $1,000</p>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 id="activeContractTitle" class="text-base sm:text-lg font-bold text-slate-900">Freelance Master Services Agreement (MSA)</h2>
+                <span id="activeContractCategory" class="px-2.5 py-0.5 text-xs font-semibold bg-slate-100 text-slate-700 rounded-md border border-slate-200">Services & Contractor</span>
               </div>
-              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
-                <span class="text-[11px] font-medium text-slate-400 block mb-1">Payment Schedule</span>
-                <p id="metricPayment" class="text-xs font-semibold text-amber-300">Net-60 days with entire invoice withholding on disputes</p>
-              </div>
-              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
-                <span class="text-[11px] font-medium text-slate-400 block mb-1">Termination Notice</span>
-                <p id="metricTermination" class="text-xs font-semibold text-rose-300">Client: 3 calendar days; Contractor: 60 calendar days + 50% milestone penalty</p>
-              </div>
-              <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
-                <span class="text-[11px] font-medium text-slate-400 block mb-1">Governing Law & Forum</span>
-                <p id="metricJurisdiction" class="text-xs font-semibold text-slate-200">Delaware, Mandatory Arbitration (Contractor advances retainer)</p>
-              </div>
+              <p id="activeContractParties" class="text-xs text-slate-500 mt-0.5">Parties: Acme Innovations Inc. & Alex Rivera (Contractor)</p>
             </div>
           </div>
 
-          <!-- Plain-English vs Executive Toggle -->
-          <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between">
-            <span class="text-xs text-slate-400">Explainer View Mode:</span>
-            <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800" role="radiogroup" aria-label="Explainer Mode Selector">
-              <button id="viewEli5Btn" role="radio" aria-checked="true" class="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Layman / ELI5</button>
-              <button id="viewExecBtn" role="radio" aria-checked="false" class="px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Executive Brief</button>
-            </div>
+          <!-- Document Upload & Inspector Triggers -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- File Upload Button -->
+            <label for="fileUploadInput" class="cursor-pointer flex items-center space-x-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 shadow-sm transition focus-within:ring-2 focus-within:ring-indigo-500">
+              <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+              <span>Upload PDF / DOCX / TXT</span>
+              <input type="file" id="fileUploadInput" class="sr-only" accept=".pdf,.docx,.doc,.txt,.md" aria-label="Upload PDF, DOCX, or TXT contract file">
+            </label>
+
+            <!-- Toggle Document Inspector -->
+            <button id="toggleInspectorBtn" aria-expanded="false" aria-controls="contractInspector" class="flex items-center space-x-1.5 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg border border-slate-300 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <i data-lucide="eye" class="w-4 h-4 text-slate-500" aria-hidden="true"></i>
+              <span id="inspectorBtnText">View Contract Text</span>
+            </button>
+
+            <!-- Run Analysis Button -->
+            <button id="runAnalysisBtn" aria-label="Run full AI contract audit" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+              <span>Run Full AI Audit</span>
+            </button>
           </div>
+
         </div>
 
-      </div>
-
-      <!-- Plain English Summary Box -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
-        <div class="flex items-center space-x-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-indigo-500" aria-hidden="true"></div>
-          <h3 id="summaryHeading" class="text-sm font-bold text-white uppercase tracking-wider">Layman's Plain-English Breakdown</h3>
-        </div>
-        <div id="summaryContent" aria-live="polite" class="text-sm text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
-          This contract heavily favors the client. You have to wait 2 whole months to get paid, the client can fire you in 3 days without paying milestone balances, but you must give 2 months notice. Most dangerously, they try to own code you write on weekends and make you take unlimited legal blame.
-        </div>
-      </div>
-
-      <!-- Rights vs Obligations Matrix -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <h3 class="text-sm font-bold text-white flex items-center space-x-2 mb-4">
-          <i data-lucide="columns" class="w-4 h-4 text-indigo-400" aria-hidden="true"></i>
-          <span>Rights vs. Obligations Matrix</span>
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Your Rights -->
-          <div class="bg-slate-950/70 p-4 rounded-xl border border-emerald-900/30">
-            <div class="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="check-circle" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Your Rights</span>
-            </div>
-            <ul id="yourRightsList" class="space-y-2 text-xs text-slate-300">
-              <li>• Receive $120/hr compensation after Net-60 days</li>
-              <li>• Exit contract upon providing 60 days advance written notice</li>
-            </ul>
-          </div>
-          <!-- Your Obligations -->
-          <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
-            <div class="flex items-center space-x-2 text-rose-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="alert-triangle" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Your Obligations (Burden)</span>
-            </div>
-            <ul id="yourObligationsList" class="space-y-2 text-xs text-slate-300">
-              <li>• Provide professional software consulting services</li>
-              <li>• Assign all weekend and personal device inventions to Client</li>
-              <li>• Defend Client against third-party IP claims without monetary cap</li>
-              <li>• Refrain from recruiting client staff/customers for 18 months</li>
-            </ul>
-          </div>
-          <!-- Counterparty Obligations -->
-          <div class="bg-slate-950/70 p-4 rounded-xl border border-sky-900/30">
-            <div class="flex items-center space-x-2 text-sky-400 text-xs font-bold uppercase mb-3">
-              <i data-lucide="building" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Counterparty Obligations</span>
-            </div>
-            <ul id="counterpartyObligationsList" class="space-y-2 text-xs text-slate-300">
-              <li>• Compensate undisputed invoices within 60 days</li>
-              <li>• Provide Statements of Work outlining scope</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Red Flag Radar (Vulnerabilities Cards) -->
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-400" aria-hidden="true"></i>
-            <span>Red-Flag Radar & Unfair Terms Audit</span>
-          </h3>
-          <span class="text-xs text-slate-400">Click "Draft Counter-Clause" to generate balanced legal wording</span>
-        </div>
-
-        <div id="redFlagsContainer" aria-live="polite" class="space-y-3">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
-      <!-- Immediate Action Checklist -->
-      <div class="bg-indigo-950/40 border border-indigo-900/50 rounded-2xl p-5">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center space-x-2 mb-3">
-          <i data-lucide="list-checks" class="w-4 h-4" aria-hidden="true"></i>
-          <span>Recommended Pre-Signing Action Checklist</span>
-        </h4>
-        <ul id="actionChecklist" class="space-y-2 text-xs text-slate-200">
-          <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
-            <span>Request mutual liability cap equal to 12 months fees paid.</span>
-          </li>
-          <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
-            <span>Carve out Contractor Tools and pre-existing libraries from Section 4.</span>
-          </li>
-          <li class="flex items-start space-x-2">
-            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" aria-hidden="true"></i>
-            <span>Shorten payment terms from Net-60 to Net-30 and make termination notice mutual (30 days).</span>
-          </li>
-        </ul>
-      </div>
-
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 2: CONTRACT REDLINER (DIFF ENGINE) -->
-    <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-redline" aria-labelledby="tab-btn-redline" class="tab-content hidden space-y-6">
-      
-      <!-- Redline Controls -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-          <div>
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <i data-lucide="git-compare" class="w-5 h-5 text-indigo-400" aria-hidden="true"></i>
-              <span>Semantic Contract Redliner & Diff Engine</span>
-            </h3>
-            <p class="text-xs text-slate-400">Detects substantive legal intent alterations between two versions (not just word typos).</p>
-          </div>
-          <button id="runComparisonBtn" aria-label="Compare Version 1 and Version 2 contracts" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-indigo-600/30 transition self-start focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
-            <span>Compare Versions</span>
+        <!-- 1-Click Preset Contract Loaders -->
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold text-slate-500 mr-1">Quick Test Presets:</span>
+          <button onclick="loadSampleContract('msa_freelance')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition">
+            📄 Freelance MSA (High Risk)
+          </button>
+          <button onclick="loadSampleContract('saas_tos')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition">
+            ⚖️ Enterprise SaaS Terms
+          </button>
+          <button onclick="loadSampleContract('residential_lease')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition">
+            🏠 Residential Tenancy Lease
           </button>
         </div>
 
-        <!-- Dual Input Textareas -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
-              <label for="diffTextA">Version 1 (Original / Baseline)</label>
-              <button onclick="loadSampleContractV1()" class="text-indigo-400 hover:underline focus:outline-none">Load Standard MSA</button>
+        <!-- Collapsible Contract Inspector Drawer -->
+        <div id="contractInspector" class="hidden mt-4 pt-4 border-t border-slate-200 space-y-2" aria-hidden="true">
+          <div class="flex items-center justify-between text-xs text-slate-500">
+            <label for="contractTextInput" class="font-medium text-slate-700">Active Contract Raw Text (Editable or viewable):</label>
+            <div class="flex items-center space-x-3">
+              <span id="charCountLabel" class="font-semibold text-slate-600">0 characters</span>
+              <button onclick="copyContractText()" aria-label="Copy active contract text" class="hover:text-indigo-600 flex items-center space-x-1 focus:outline-none font-medium">
+                <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                <span>Copy Text</span>
+              </button>
             </div>
-            <textarea id="diffTextA" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Paste Version 1 text..."></textarea>
           </div>
-          <div>
-            <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
-              <label for="diffTextB">Version 2 (Counterparty Redline Markup)</label>
-              <button onclick="loadSampleContractV2()" class="text-indigo-400 hover:underline focus:outline-none">Load Revised Redline v2</button>
-            </div>
-            <textarea id="diffTextB" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" placeholder="Paste Version 2 text..."></textarea>
-          </div>
+          <textarea id="contractTextInput" rows="8" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed" placeholder="Paste or view contract clauses here..."></textarea>
         </div>
       </div>
 
-      <!-- Redline Results Container -->
-      <div id="redlineResults" aria-live="polite" class="space-y-4">
-        
-        <!-- Score Delta & Summary Banner -->
-        <div class="bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div class="flex items-center space-x-2">
-              <span id="redlineRiskDeltaBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">Significantly Favorable</span>
-              <span id="redlineScoreDelta" class="text-xs font-semibold text-emerald-400">+34 Points Safety Improvement</span>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- WORKFLOW STEP 2: CHOOSE AI LEGAL OBJECTIVE -->
+    <!-- ======================================================== -->
+    <section id="workflow-step-2" class="space-y-6">
+      
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+        <div class="max-w-2xl">
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Guided Legal Pipeline</span>
+          <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">Select Your AI Legal Analysis Objective</h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Choose what you need to achieve with this agreement. LegalLens AI will extract, cross-reference, and audit the legal text using our defensive Groq inference engine.
+          </p>
+        </div>
+
+        <!-- 6 Objective Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          
+          <!-- Objective 1: Simplifier & Risk Radar -->
+          <div onclick="executeObjective('tab-simplifier')" class="legal-card bg-slate-50 hover:bg-indigo-50/40 border border-slate-200 hover:border-indigo-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="shield-alert" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition">Simplifier & Risk Radar</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Generate 0–100 safety score, layman ELI5 breakdown, rights vs obligations matrix, and red-flag vulnerability radar.
+              </p>
             </div>
-            <p id="redlineSummary" class="text-xs text-slate-300 mt-2 leading-relaxed">Version 2 introduces major protective revisions for the Contractor: hourly rate increased to $135/hr, payment terms accelerated from Net-60 to Net-15, termination made mutual at 30 days, pre-existing IP explicitly retained, and liability capped mutually at 12 months fees.</p>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-indigo-600">
+              <span>Launch Audit</span>
+              <span>→</span>
+            </div>
           </div>
-          <div class="shrink-0 bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-            <span class="text-[11px] text-slate-400 block">Negotiation Verdict</span>
-            <span id="redlineVerdict" class="text-xs font-bold text-emerald-400">Accept Version 2</span>
+
+          <!-- Objective 2: Redline Diff -->
+          <div onclick="executeObjective('tab-redline')" class="legal-card bg-slate-50 hover:bg-indigo-50/40 border border-slate-200 hover:border-indigo-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="git-compare" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition">Contract Redliner (Diff)</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Compare two versions of an agreement side-by-side, detect substantive legal intent shifts, and score risk delta.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-indigo-600">
+              <span>Compare Versions</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Objective 3: Clause Interrogator -->
+          <div onclick="executeObjective('tab-interrogate')" class="legal-card bg-slate-50 hover:bg-sky-50/40 border border-slate-200 hover:border-sky-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-3 group-hover:bg-sky-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="message-square-quote" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">Clause Interrogator</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Chat with your contract. Answers are strictly grounded in contract text with jump-to-clause citations and tactical precautions.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-sky-600">
+              <span>Interrogate Contract</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Objective 4: What-If Simulator -->
+          <div onclick="executeObjective('tab-simulator')" class="legal-card bg-slate-50 hover:bg-amber-50/40 border border-slate-200 hover:border-amber-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="help-circle" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-amber-700 transition">"What-If" Dispute Simulator</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Stress-test hypothetical breach or non-payment scenarios against the contract clauses before you sign.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-amber-600">
+              <span>Simulate Scenarios</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Objective 5: Counter-Clause Drafter -->
+          <div onclick="executeObjective('tab-redraft')" class="legal-card bg-slate-50 hover:bg-fuchsia-50/40 border border-slate-200 hover:border-fuchsia-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center mb-3 group-hover:bg-fuchsia-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="pencil-ruler" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-fuchsia-700 transition">Counter-Clause Drafter</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Transform one-sided or unfair clauses into balanced, legally enforceable terms with pre-written negotiation emails.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-fuchsia-600">
+              <span>Draft Counter-Proposals</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Objective 6: Multilingual Access -->
+          <div onclick="executeObjective('tab-multilingual')" class="legal-card bg-slate-50 hover:bg-teal-50/40 border border-slate-200 hover:border-teal-300 rounded-xl p-5 cursor-pointer flex flex-col justify-between group transition">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center mb-3 group-hover:bg-teal-600 group-hover:text-white transition" aria-hidden="true">
+                <i data-lucide="languages" class="w-5 h-5"></i>
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-teal-700 transition">Multilingual Legal Access</h3>
+              <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                Democratize legal understanding with regional language explanations (Hindi, Spanish, Telugu, Tamil, German) and terminology glossaries.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-teal-600">
+              <span>Translate & Access</span>
+              <span>→</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- WORKFLOW STEP 3: EXECUTIVE LEGAL INTELLIGENCE & ACTIONS -->
+    <!-- ======================================================== -->
+    <section id="workflow-step-3" class="space-y-6">
+
+      <!-- MAIN FEATURE TABS NAVIGATION (WCAG 2.1 Tablist) -->
+      <nav aria-label="Legal AI analysis modules" class="border-b border-slate-200 bg-white rounded-t-2xl px-2 pt-2 shadow-sm">
+        <div role="tablist" class="flex space-x-2 sm:space-x-3 overflow-x-auto pb-1 text-xs sm:text-sm font-semibold scrollbar-none">
+          
+          <button role="tab" id="tab-btn-simplifier" aria-selected="true" aria-controls="tab-simplifier" class="tab-btn active flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-indigo-600 text-indigo-900 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simplifier">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-600" aria-hidden="true"></i>
+            <span>Simplifier & Risk Radar</span>
+          </button>
+
+          <button role="tab" id="tab-btn-redline" aria-selected="false" aria-controls="tab-redline" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redline">
+            <i data-lucide="git-compare" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+            <span>Contract Redliner (Diff)</span>
+          </button>
+
+          <button role="tab" id="tab-btn-interrogate" aria-selected="false" aria-controls="tab-interrogate" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-interrogate">
+            <i data-lucide="message-square-quote" class="w-4 h-4 text-sky-600" aria-hidden="true"></i>
+            <span>Clause Interrogator</span>
+          </button>
+
+          <button role="tab" id="tab-btn-simulator" aria-selected="false" aria-controls="tab-simulator" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-simulator">
+            <i data-lucide="help-circle" class="w-4 h-4 text-amber-600" aria-hidden="true"></i>
+            <span>"What-If" Simulator</span>
+          </button>
+
+          <button role="tab" id="tab-btn-redraft" aria-selected="false" aria-controls="tab-redraft" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-redraft">
+            <i data-lucide="pencil-ruler" class="w-4 h-4 text-fuchsia-600" aria-hidden="true"></i>
+            <span>Counter-Clause Drafter</span>
+          </button>
+
+          <button role="tab" id="tab-btn-multilingual" aria-selected="false" aria-controls="tab-multilingual" class="tab-btn flex items-center space-x-2 px-3 sm:px-4 py-3 rounded-t-xl border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-tab="tab-multilingual">
+            <i data-lucide="languages" class="w-4 h-4 text-teal-600" aria-hidden="true"></i>
+            <span>Multilingual Access</span>
+          </button>
+
+        </div>
+      </nav>
+
+      <!-- TAB CONTENTS -->
+
+      <!-- ======================================================== -->
+      <!-- TAB 1: SIMPLIFIER & RISK RADAR -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-simplifier" aria-labelledby="tab-btn-simplifier" class="tab-content space-y-6">
+        
+        <!-- Top Row: Score Gauge & Key Metrics -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Risk Health Score Card -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-sm" role="region" aria-label="Overall contract safety evaluation">
+            <div class="text-xs uppercase font-extrabold tracking-wider text-slate-500 mb-2">Overall Contract Health Score</div>
+            
+            <!-- Circular Gauge -->
+            <div class="relative w-36 h-36 flex items-center justify-center my-2" role="img" aria-label="Contract Health Score Meter">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-slate-100" fill="none"/>
+                <circle id="scoreMeterCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-amber-500 transition-all duration-1000" fill="none" stroke-dasharray="264" stroke-dashoffset="140" stroke-linecap="round"/>
+              </svg>
+              <div class="absolute flex flex-col items-center" aria-live="polite">
+                <span id="scoreDisplay" class="text-4xl font-black tracking-tight text-slate-900">48</span>
+                <span class="text-[10px] uppercase font-bold text-slate-400">/ 100</span>
+              </div>
+            </div>
+
+            <div id="riskTierBadge" class="mt-2 px-3 py-1 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200" role="status">High Risk Exposure</div>
+            <p class="text-xs text-slate-500 mt-2">Significant legal asymmetries and liability traps detected.</p>
+          </div>
+
+          <!-- 4 Key Contract Commitments -->
+          <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2 mb-4">
+                <i data-lucide="key-round" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+                <span>Core Commercial Terms & Legal Commitments</span>
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <span class="text-[11px] font-bold text-slate-500 block mb-1">Financial Exposure</span>
+                  <p id="metricFinancial" class="text-xs font-bold text-rose-700">Contractor: Unlimited liability & uncapped indemnity; Client: Capped at $1,000</p>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <span class="text-[11px] font-bold text-slate-500 block mb-1">Payment Schedule</span>
+                  <p id="metricPayment" class="text-xs font-bold text-amber-700">Net-60 days with entire invoice withholding on disputes</p>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <span class="text-[11px] font-bold text-slate-500 block mb-1">Termination Notice</span>
+                  <p id="metricTermination" class="text-xs font-bold text-rose-700">Client: 3 calendar days; Contractor: 60 calendar days + 50% milestone penalty</p>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <span class="text-[11px] font-bold text-slate-500 block mb-1">Governing Law & Forum</span>
+                  <p id="metricJurisdiction" class="text-xs font-bold text-slate-800">Delaware, Mandatory Arbitration (Contractor advances retainer)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Plain-English vs Executive Toggle -->
+            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-500">Explainer View Mode:</span>
+              <div class="inline-flex rounded-lg bg-slate-100 p-1 border border-slate-200" role="radiogroup" aria-label="Explainer Mode Selector">
+                <button id="viewEli5Btn" role="radio" aria-checked="true" class="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold shadow-sm transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Layman / ELI5</button>
+                <button id="viewExecBtn" role="radio" aria-checked="false" class="px-3 py-1 text-xs rounded-md text-slate-600 hover:text-slate-900 font-semibold transition focus:outline-none focus:ring-1 focus:ring-indigo-400">Executive Brief</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Plain English Summary Box -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+          <div class="flex items-center space-x-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-indigo-600" aria-hidden="true"></div>
+            <h3 id="summaryHeading" class="text-sm font-bold text-slate-900 uppercase tracking-wider">Layman's Plain-English Breakdown</h3>
+          </div>
+          <div id="summaryContent" aria-live="polite" class="text-sm text-slate-700 leading-relaxed bg-indigo-50/40 p-4 rounded-xl border border-indigo-100">
+            This contract heavily favors the client. You have to wait 2 whole months to get paid, the client can fire you in 3 days without paying milestone balances, but you must give 2 months notice. Most dangerously, they try to own code you write on weekends and make you take unlimited legal blame.
           </div>
         </div>
 
-        <!-- Clause-by-Clause Substantive Alterations -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Substantive Clause Shifts</h4>
-          <div id="clauseShiftsContainer" class="space-y-3">
+        <!-- Rights vs Obligations Matrix -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2 mb-4">
+            <i data-lucide="columns" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+            <span>Rights vs. Obligations Matrix</span>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Your Rights -->
+            <div class="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80">
+              <div class="flex items-center space-x-2 text-emerald-800 text-xs font-bold uppercase mb-3">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600" aria-hidden="true"></i>
+                <span>Your Rights</span>
+              </div>
+              <ul id="yourRightsList" class="space-y-2 text-xs text-slate-700 font-medium">
+                <li>• Receive $120/hr compensation after Net-60 days</li>
+                <li>• Exit contract upon providing 60 days advance written notice</li>
+              </ul>
+            </div>
+            <!-- Your Obligations -->
+            <div class="bg-rose-50/60 p-4 rounded-xl border border-rose-200/80">
+              <div class="flex items-center space-x-2 text-rose-800 text-xs font-bold uppercase mb-3">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600" aria-hidden="true"></i>
+                <span>Your Obligations (Burden)</span>
+              </div>
+              <ul id="yourObligationsList" class="space-y-2 text-xs text-slate-700 font-medium">
+                <li>• Provide professional software consulting services</li>
+                <li>• Assign all weekend and personal device inventions to Client</li>
+                <li>• Defend Client against third-party IP claims without monetary cap</li>
+                <li>• Refrain from recruiting client staff/customers for 18 months</li>
+              </ul>
+            </div>
+            <!-- Counterparty Obligations -->
+            <div class="bg-sky-50/60 p-4 rounded-xl border border-sky-200/80">
+              <div class="flex items-center space-x-2 text-sky-800 text-xs font-bold uppercase mb-3">
+                <i data-lucide="building" class="w-4 h-4 text-sky-600" aria-hidden="true"></i>
+                <span>Counterparty Obligations</span>
+              </div>
+              <ul id="counterpartyObligationsList" class="space-y-2 text-xs text-slate-700 font-medium">
+                <li>• Compensate undisputed invoices within 60 days</li>
+                <li>• Provide Statements of Work outlining scope</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Red Flag Radar (Vulnerabilities Cards) -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-rose-600" aria-hidden="true"></i>
+              <span>Red-Flag Radar & Unfair Terms Audit</span>
+            </h3>
+            <span class="text-xs text-slate-500">Click "Draft Counter-Clause" to generate balanced legal wording</span>
+          </div>
+
+          <div id="redFlagsContainer" aria-live="polite" class="space-y-3">
             <!-- Populated by JS -->
           </div>
         </div>
 
+        <!-- Immediate Action Checklist -->
+        <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-5 shadow-sm">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-900 flex items-center space-x-2 mb-3">
+            <i data-lucide="list-checks" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+            <span>Recommended Pre-Signing Action Checklist</span>
+          </h4>
+          <ul id="actionChecklist" class="space-y-2 text-xs text-slate-800 font-medium">
+            <li class="flex items-start space-x-2">
+              <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" aria-hidden="true"></i>
+              <span>Request mutual liability cap equal to 12 months fees paid.</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" aria-hidden="true"></i>
+              <span>Carve out Contractor Tools and pre-existing libraries from Section 4.</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" aria-hidden="true"></i>
+              <span>Shorten payment terms from Net-60 to Net-30 and make termination notice mutual (30 days).</span>
+            </li>
+          </ul>
+        </div>
+
       </div>
 
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 3: CLAUSE INTERROGATOR (GROUNDED COPILOT) -->
-    <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-interrogate" aria-labelledby="tab-btn-interrogate" class="tab-content hidden space-y-4">
-      
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col h-[600px]">
+      <!-- ======================================================== -->
+      <!-- TAB 2: CONTRACT REDLINER (DIFF ENGINE) -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-redline" aria-labelledby="tab-btn-redline" class="tab-content hidden space-y-6">
         
-        <!-- Header & Chips -->
-        <div class="border-b border-slate-800 pb-3 mb-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="message-square-quote" class="w-5 h-5 text-sky-400" aria-hidden="true"></i>
-              <h3 class="text-sm font-bold text-white">Grounded Legal Clause Interrogator</h3>
+        <!-- Redline Controls -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                <i data-lucide="git-compare" class="w-5 h-5 text-indigo-600" aria-hidden="true"></i>
+                <span>Semantic Contract Redliner & Diff Engine</span>
+              </h3>
+              <p class="text-xs text-slate-500">Detects substantive legal intent alterations between two versions (not just word typos).</p>
             </div>
-            <span class="text-[11px] text-slate-400">Answers strictly cited from active contract</span>
+            <button id="runComparisonBtn" aria-label="Compare Version 1 and Version 2 contracts" class="flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition self-start focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+              <span>Compare Versions</span>
+            </button>
           </div>
 
-          <!-- Quick Query Prompt Chips -->
-          <div class="flex flex-wrap gap-1.5 mt-3" role="group" aria-label="Quick inquiry prompts">
-            <button onclick="askInterrogator('Can they terminate without cause and what notice is required?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Can they terminate without cause?</button>
-            <button onclick="askInterrogator('Who owns the code and intellectual property?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Who owns the code / IP?</button>
-            <button onclick="askInterrogator('What are the payment deadlines and penalties if overdue?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Payment terms & late fees?</button>
-            <button onclick="askInterrogator('Is there an uncapped indemnification or liability trap?')" class="chip-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-sky-400">Is there an uncapped indemnity trap?</button>
+          <!-- Dual Input Textareas -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
+                <label for="diffTextA">Version 1 (Original / Baseline)</label>
+                <button onclick="loadSampleContractV1()" class="text-indigo-600 hover:underline font-semibold focus:outline-none">Load Standard MSA</button>
+              </div>
+              <textarea id="diffTextA" rows="6" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed" placeholder="Paste Version 1 text..."></textarea>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
+                <label for="diffTextB">Version 2 (Counterparty Redline Markup)</label>
+                <button onclick="loadSampleContractV2()" class="text-indigo-600 hover:underline font-semibold focus:outline-none">Load Revised Redline v2</button>
+              </div>
+              <textarea id="diffTextB" rows="6" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-mono text-slate-800 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-1 focus:ring-indigo-500 leading-relaxed" placeholder="Paste Version 2 text..."></textarea>
+            </div>
           </div>
         </div>
 
-        <!-- Chat Conversation Area -->
-        <div id="interrogateMessages" role="log" aria-live="polite" aria-label="Clause Interrogator conversation history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
-          <!-- Initial Welcome Message -->
-          <div class="flex items-start space-x-3">
-            <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0" aria-hidden="true">
-              <i data-lucide="bot" class="w-4 h-4 text-white" aria-hidden="true"></i>
+        <!-- Redline Results Container -->
+        <div id="redlineResults" aria-live="polite" class="space-y-4">
+          
+          <!-- Score Delta & Summary Banner -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span id="redlineRiskDeltaBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Significantly Favorable</span>
+                <span id="redlineScoreDelta" class="text-xs font-bold text-emerald-700">+34 Points Safety Improvement</span>
+              </div>
+              <p id="redlineSummary" class="text-xs text-slate-700 mt-2 leading-relaxed">Version 2 introduces major protective revisions for the Contractor: hourly rate increased to $135/hr, payment terms accelerated from Net-60 to Net-15, termination made mutual at 30 days, pre-existing IP explicitly retained, and liability capped mutually at 12 months fees.</p>
             </div>
-            <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-2xl max-w-2xl text-slate-200 space-y-2">
-              <p>Hello! I am your Legal Copilot. I have indexed the active contract. You can ask me any question—such as payment terms, non-compete obligations, or hidden liabilities—and I will answer with exact clause citations.</p>
+            <div class="shrink-0 bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              <span class="text-[11px] font-medium text-slate-500 block">Negotiation Verdict</span>
+              <span id="redlineVerdict" class="text-xs font-bold text-emerald-700">Accept Version 2</span>
             </div>
           </div>
+
+          <!-- Clause-by-Clause Substantive Alterations -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Substantive Clause Shifts</h4>
+            <div id="clauseShiftsContainer" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
         </div>
 
-        <!-- Input Box -->
-        <div class="pt-3 border-t border-slate-800 mt-2">
-          <form id="interrogateForm" class="flex space-x-2" aria-label="Ask Legal Copilot a question">
-            <label for="interrogateInput" class="sr-only">Ask any question about this contract</label>
-            <input type="text" id="interrogateInput" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" placeholder="Ask any question about this contract (e.g., 'What happens if I get sued by a third party?')...">
-            <button type="submit" aria-label="Send question" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 transition focus:outline-none focus:ring-2 focus:ring-sky-400">
-              <i data-lucide="send" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Ask</span>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 3: CLAUSE INTERROGATOR (GROUNDED COPILOT) -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-interrogate" aria-labelledby="tab-btn-interrogate" class="tab-content hidden space-y-4">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col h-[600px]">
+          
+          <!-- Header & Chips -->
+          <div class="border-b border-slate-200 pb-3 mb-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="message-square-quote" class="w-5 h-5 text-sky-600" aria-hidden="true"></i>
+                <h3 class="text-sm font-bold text-slate-900">Grounded Legal Clause Interrogator</h3>
+              </div>
+              <span class="text-[11px] font-medium text-slate-500">Answers strictly cited from active contract</span>
+            </div>
+
+            <!-- Quick Query Prompt Chips -->
+            <div class="flex flex-wrap gap-1.5 mt-3" role="group" aria-label="Quick inquiry prompts">
+              <button onclick="askInterrogator('Can they terminate without cause and what notice is required?')" class="chip-btn text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 py-1 rounded-full border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-sky-500">Can they terminate without cause?</button>
+              <button onclick="askInterrogator('Who owns the code and intellectual property?')" class="chip-btn text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 py-1 rounded-full border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-sky-500">Who owns the code / IP?</button>
+              <button onclick="askInterrogator('What are the payment deadlines and penalties if overdue?')" class="chip-btn text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 py-1 rounded-full border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-sky-500">Payment terms & late fees?</button>
+              <button onclick="askInterrogator('Is there an uncapped indemnification or liability trap?')" class="chip-btn text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-2.5 py-1 rounded-full border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-sky-500">Is there an uncapped indemnity trap?</button>
+            </div>
+          </div>
+
+          <!-- Chat Conversation Area -->
+          <div id="interrogateMessages" role="log" aria-live="polite" aria-label="Clause Interrogator conversation history" class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+            <!-- Initial Welcome Message -->
+            <div class="flex items-start space-x-3">
+              <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0 text-white" aria-hidden="true">
+                <i data-lucide="bot" class="w-4 h-4" aria-hidden="true"></i>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl max-w-2xl text-slate-800 space-y-2">
+                <p>Hello! I am your Legal Copilot. I have indexed the active contract. You can ask me any question—such as payment terms, non-compete obligations, or hidden liabilities—and I will answer with exact clause citations.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Box -->
+          <div class="pt-3 border-t border-slate-200 mt-2">
+            <form id="interrogateForm" class="flex space-x-2" aria-label="Ask Legal Copilot a question">
+              <label for="interrogateInput" class="sr-only">Ask any question about this contract</label>
+              <input type="text" id="interrogateInput" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500" placeholder="Ask any question about this contract (e.g., 'What happens if I get sued by a third party?')...">
+              <button type="submit" aria-label="Send question" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center space-x-1.5 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-sky-400">
+                <i data-lucide="send" class="w-4 h-4" aria-hidden="true"></i>
+                <span>Ask</span>
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 4: "WHAT-IF" SCENARIO SIMULATOR -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-simulator" aria-labelledby="tab-btn-simulator" class="tab-content hidden space-y-6">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+              <i data-lucide="help-circle" class="w-5 h-5 text-amber-600" aria-hidden="true"></i>
+              <span>"What-If" Dispute & Scenario Simulator</span>
+            </h3>
+            <p class="text-xs text-slate-500">Stress-test real-world hypothetical disputes against this contract's clauses before you sign.</p>
+          </div>
+
+          <!-- Preset Scenario Buttons -->
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Scenario presets">
+            <span class="text-xs font-bold text-slate-500 self-center">Try presets:</span>
+            <button onclick="setScenario('What if the client delays milestone payment by 60 days and ignores my emails?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-amber-500">Client 60-day late payment</button>
+            <button onclick="setScenario('What if I terminate the contract after 3 months because the client changed the project scope?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-amber-500">Early contractor termination</button>
+            <button onclick="setScenario('What if a third party sues claiming an open-source library I used infringes their patent?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition focus:outline-none focus:ring-1 focus:ring-amber-500">Third-party IP lawsuit</button>
+          </div>
+
+          <!-- Custom Scenario Form -->
+          <form id="scenarioForm" class="space-y-3" aria-label="Hypothetical scenario simulation form">
+            <label for="scenarioInput" class="sr-only">Type a scenario description</label>
+            <textarea id="scenarioInput" rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="Type a scenario (e.g., 'What happens if the client demands unlimited revisions without extra pay?')..."></textarea>
+            <button type="submit" aria-label="Run scenario simulation" class="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-amber-400">
+              <i data-lucide="play" class="w-4 h-4" aria-hidden="true"></i>
+              <span>Simulate Scenario Outcome</span>
             </button>
           </form>
         </div>
 
-      </div>
-
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 4: "WHAT-IF" SCENARIO SIMULATOR -->
-    <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-simulator" aria-labelledby="tab-btn-simulator" class="tab-content hidden space-y-6">
-      
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400" aria-hidden="true"></i>
-            <span>"What-If" Dispute & Scenario Simulator</span>
-          </h3>
-          <p class="text-xs text-slate-400">Stress-test real-world hypothetical disputes against this contract's clauses before you sign.</p>
-        </div>
-
-        <!-- Preset Scenario Buttons -->
-        <div class="flex flex-wrap gap-2" role="group" aria-label="Scenario presets">
-          <span class="text-xs text-slate-400 self-center">Try presets:</span>
-          <button onclick="setScenario('What if the client delays milestone payment by 60 days and ignores my emails?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Client 60-day late payment</button>
-          <button onclick="setScenario('What if I terminate the contract after 3 months because the client changed the project scope?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Early contractor termination</button>
-          <button onclick="setScenario('What if a third party sues claiming an open-source library I used infringes their patent?')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition focus:outline-none focus:ring-1 focus:ring-amber-400">Third-party IP lawsuit</button>
-        </div>
-
-        <!-- Custom Scenario Form -->
-        <form id="scenarioForm" class="space-y-3" aria-label="Hypothetical scenario simulation form">
-          <label for="scenarioInput" class="sr-only">Type a scenario description</label>
-          <textarea id="scenarioInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="Type a scenario (e.g., 'What happens if the client demands unlimited revisions without extra pay?')..."></textarea>
-          <button type="submit" aria-label="Run scenario simulation" class="flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-amber-600/30 transition focus:outline-none focus:ring-2 focus:ring-amber-400">
-            <i data-lucide="play" class="w-4 h-4" aria-hidden="true"></i>
-            <span>Simulate Scenario Outcome</span>
-          </button>
-        </form>
-      </div>
-
-      <!-- Simulation Results Card -->
-      <div id="scenarioResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-        
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-4">
-          <div>
-            <span class="text-[11px] uppercase font-bold text-amber-400">Simulation Verdict</span>
-            <h4 id="scenarioTitle" class="text-sm font-bold text-white mt-0.5">What if client delays payment by 60 days?</h4>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-xs text-slate-400">Your Leverage:</span>
-            <span id="scenarioLeverageBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-950 text-rose-300 border border-rose-800">Weak / Highly Vulnerable</span>
-          </div>
-        </div>
-
-        <!-- Projected Outcome -->
-        <div>
-          <h5 class="text-xs font-bold text-slate-300 uppercase mb-1">Projected Legal Outcome</h5>
-          <p id="scenarioOutcome" class="text-xs text-slate-300 bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 leading-relaxed">
-            Under Section 2 and Section 3, you are at a serious disadvantage. Payment is on Net-60 terms and disputed invoices can be held in full with 0% late interest. If you stop work or walk away due to non-payment, the client may invoke Section 3(c) to claim you forfeited 50% of your milestone fees.
-          </p>
-        </div>
-
-        <!-- Action Plan & Traps -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Step-by-Step Action Plan -->
-          <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800">
-            <h5 class="text-xs font-bold text-emerald-400 uppercase mb-2 flex items-center space-x-1.5">
-              <i data-lucide="check-circle-2" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Step-by-Step Strategic Action Plan</span>
-            </h5>
-            <ul id="scenarioActionPlan" class="space-y-2 text-xs text-slate-300">
-              <li>• Step 1: Send a formal written Notice of Default confirming completion of milestone deliverables.</li>
-              <li>• Step 2: Do not verbally walk off to prevent triggering Section 3(c) forfeiture.</li>
-              <li>• Step 3: Offer a milestone delivery pause pending resolution before next SOW tasks.</li>
-            </ul>
-          </div>
-
-          <!-- Traps to Avoid -->
-          <div class="bg-slate-950/70 p-4 rounded-xl border border-rose-900/30">
-            <h5 class="text-xs font-bold text-rose-400 uppercase mb-2 flex items-center space-x-1.5">
-              <i data-lucide="alert-octagon" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Critical Traps to Avoid</span>
-            </h5>
-            <ul id="scenarioTraps" class="space-y-2 text-xs text-slate-300">
-              <li>• Do not abruptly wipe server access, as Section 6 uncapped indemnity could be weaponized against you.</li>
-              <li>• Never agree verbally to extensions without an email paper trail.</li>
-            </ul>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 5: COUNTER-CLAUSE DRAFTER (NEGOTIATOR COPILOT) -->
-    <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-redraft" aria-labelledby="tab-btn-redraft" class="tab-content hidden space-y-6">
-      
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="pencil-ruler" class="w-5 h-5 text-fuchsia-400" aria-hidden="true"></i>
-            <span>AI Smart Counter-Clause Drafter & Negotiation Copilot</span>
-          </h3>
-          <p class="text-xs text-slate-400">Transform any one-sided or unfair clause into a balanced, legally enforceable counter-proposal.</p>
-        </div>
-
-        <form id="redraftForm" class="space-y-4" aria-label="Counter-clause generator form">
-          <div>
-            <label for="redraftClauseInput" class="block text-xs font-semibold text-slate-300 mb-1">Clause to Redraft (Paste or select from red flags):</label>
-            <textarea id="redraftClauseInput" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500" placeholder="Paste the unfair clause here..."></textarea>
-          </div>
-
-          <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Simulation Results Card -->
+        <div id="scenarioResults" aria-live="polite" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-[11px] uppercase font-bold text-amber-600">Simulation Verdict</span>
+              <h4 id="scenarioTitle" class="text-sm font-bold text-slate-900 mt-0.5">What if client delays payment by 60 days?</h4>
+            </div>
             <div class="flex items-center space-x-2">
-              <label for="redraftGoalSelect" class="text-xs text-slate-400">Negotiation Strategy:</label>
-              <select id="redraftGoalSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500">
-                <option value="balanced">Mutual / Fair & Balanced (Standard Industry Practice)</option>
-                <option value="protective">User-Protective (Aggressive Safeguards)</option>
-                <option value="plain_english">Plain-English / Simplified Language</option>
-              </select>
+              <span class="text-xs text-slate-500 font-medium">Your Leverage:</span>
+              <span id="scenarioLeverageBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200">Weak / Highly Vulnerable</span>
+            </div>
+          </div>
+
+          <!-- Projected Outcome -->
+          <div>
+            <h5 class="text-xs font-bold text-slate-500 uppercase mb-1">Projected Legal Outcome</h5>
+            <p id="scenarioOutcome" class="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-xl border border-slate-200 leading-relaxed font-medium">
+              Under Section 2 and Section 3, you are at a serious disadvantage. Payment is on Net-60 terms and disputed invoices can be held in full with 0% late interest. If you stop work or walk away due to non-payment, the client may invoke Section 3(c) to claim you forfeited 50% of your milestone fees.
+            </p>
+          </div>
+
+          <!-- Action Plan & Traps -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Step-by-Step Action Plan -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <h5 class="text-xs font-bold text-emerald-700 uppercase mb-2 flex items-center space-x-1.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600" aria-hidden="true"></i>
+                <span>Step-by-Step Strategic Action Plan</span>
+              </h5>
+              <ul id="scenarioActionPlan" class="space-y-2 text-xs text-slate-700 font-medium">
+                <li>• Step 1: Send a formal written Notice of Default confirming completion of milestone deliverables.</li>
+                <li>• Step 2: Do not verbally walk off to prevent triggering Section 3(c) forfeiture.</li>
+                <li>• Step 3: Offer a milestone delivery pause pending resolution before next SOW tasks.</li>
+              </ul>
             </div>
 
-            <button type="submit" aria-label="Generate counter-clause replacement" class="flex items-center space-x-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-fuchsia-600/30 transition focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
-              <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Generate Counter-Clause</span>
-            </button>
+            <!-- Traps to Avoid -->
+            <div class="bg-rose-50/60 p-4 rounded-xl border border-rose-200">
+              <h5 class="text-xs font-bold text-rose-800 uppercase mb-2 flex items-center space-x-1.5">
+                <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600" aria-hidden="true"></i>
+                <span>Critical Traps to Avoid</span>
+              </h5>
+              <ul id="scenarioTraps" class="space-y-2 text-xs text-slate-700 font-medium">
+                <li>• Do not abruptly wipe server access, as Section 6 uncapped indemnity could be weaponized against you.</li>
+                <li>• Never agree verbally to extensions without an email paper trail.</li>
+              </ul>
+            </div>
           </div>
-        </form>
-      </div>
 
-      <!-- Redraft Output Card -->
-      <div id="redraftResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-        
-        <!-- Critique -->
-        <div>
-          <span class="text-[11px] font-bold uppercase text-rose-400">Problem with Original Clause</span>
-          <p id="redraftCritique" class="text-xs text-slate-300 mt-1">The original clause establishes unilateral, uncapped liability and unfair termination penalties that violate standard commercial norms.</p>
         </div>
 
-        <!-- Revised Clause -->
-        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
-              <i data-lucide="check-check" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Recommended Replacement Legal Wording</span>
-            </span>
-            <button onclick="copyElementText('redraftWording')" aria-label="Copy replacement clause wording" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-400">
-              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
-              <span>Copy Clause</span>
-            </button>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- TAB 5: COUNTER-CLAUSE DRAFTER (NEGOTIATOR COPILOT) -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-redraft" aria-labelledby="tab-btn-redraft" class="tab-content hidden space-y-6">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+              <i data-lucide="pencil-ruler" class="w-5 h-5 text-fuchsia-600" aria-hidden="true"></i>
+              <span>AI Smart Counter-Clause Drafter & Negotiation Copilot</span>
+            </h3>
+            <p class="text-xs text-slate-500">Transform any one-sided or unfair clause into a balanced, legally enforceable counter-proposal.</p>
           </div>
-          <pre id="redraftWording" class="text-xs font-mono text-emerald-200 whitespace-pre-wrap leading-relaxed">
+
+          <form id="redraftForm" class="space-y-4" aria-label="Counter-clause generator form">
+            <div>
+              <label for="redraftClauseInput" class="block text-xs font-bold text-slate-700 mb-1">Clause to Redraft (Paste or select from red flags):</label>
+              <textarea id="redraftClauseInput" rows="4" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-mono text-slate-800 focus:outline-none focus:bg-white focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 leading-relaxed" placeholder="Paste the unfair clause here..."></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-2">
+                <label for="redraftGoalSelect" class="text-xs font-semibold text-slate-600">Negotiation Strategy:</label>
+                <select id="redraftGoalSelect" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 font-medium">
+                  <option value="balanced">Mutual / Fair & Balanced (Standard Industry Practice)</option>
+                  <option value="protective">User-Protective (Aggressive Safeguards)</option>
+                  <option value="plain_english">Plain-English / Simplified Language</option>
+                </select>
+              </div>
+
+              <button type="submit" aria-label="Generate counter-clause replacement" class="flex items-center space-x-1.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+                <span>Generate Counter-Clause</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Redraft Output Card -->
+        <div id="redraftResults" aria-live="polite" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+          
+          <!-- Critique -->
+          <div>
+            <span class="text-[11px] font-bold uppercase text-rose-700">Problem with Original Clause</span>
+            <p id="redraftCritique" class="text-xs text-slate-700 mt-1 font-medium">The original clause establishes unilateral, uncapped liability and unfair termination penalties that violate standard commercial norms.</p>
+          </div>
+
+          <!-- Revised Clause -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-700 flex items-center space-x-1.5">
+                <i data-lucide="check-check" class="w-4 h-4 text-emerald-600" aria-hidden="true"></i>
+                <span>Recommended Replacement Legal Wording</span>
+              </span>
+              <button onclick="copyElementText('redraftWording')" aria-label="Copy replacement clause wording" class="text-xs text-slate-600 hover:text-slate-900 flex items-center space-x-1 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-sm font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                <span>Copy Clause</span>
+              </button>
+            </div>
+            <pre id="redraftWording" class="text-xs font-mono text-emerald-900 bg-white p-3 rounded-lg border border-emerald-200 whitespace-pre-wrap leading-relaxed">
 7. BALANCED LIMITATION OF LIABILITY AND INDEMNIFICATION
 (a) Mutual Indemnification: Each party shall defend and indemnify the other party from direct damages arising out of third-party claims resulting from gross negligence or intentional infringement.
 (b) Mutual Liability Cap: TO THE MAXIMUM EXTENT PERMITTED BY LAW, NEITHER PARTY'S AGGREGATE LIABILITY SHALL EXCEED THE TOTAL FEES PAID IN THE PRIOR TWELVE (12) MONTHS.
 (c) Waiver of Consequential Damages: Neither party shall be liable for indirect or consequential damages.
-          </pre>
-        </div>
-
-        <!-- Email Pitch to Send to Counterparty -->
-        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-indigo-400 flex items-center space-x-1.5">
-              <i data-lucide="mail" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Ready-to-Send Negotiation Email Justification</span>
-            </span>
-            <button onclick="copyElementText('redraftEmailPitch')" aria-label="Copy negotiation email pitch" class="text-xs text-slate-400 hover:text-white flex items-center space-x-1 bg-slate-900 px-2.5 py-1 rounded-md border border-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-400">
-              <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
-              <span>Copy Email</span>
-            </button>
+            </pre>
           </div>
-          <pre id="redraftEmailPitch" class="text-xs font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">
+
+          <!-- Email Pitch to Send to Counterparty -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-700 flex items-center space-x-1.5">
+                <i data-lucide="mail" class="w-4 h-4 text-indigo-600" aria-hidden="true"></i>
+                <span>Ready-to-Send Negotiation Email Justification</span>
+              </span>
+              <button onclick="copyElementText('redraftEmailPitch')" aria-label="Copy negotiation email pitch" class="text-xs text-slate-600 hover:text-slate-900 flex items-center space-x-1 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-sm font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                <span>Copy Email</span>
+              </button>
+            </div>
+            <pre id="redraftEmailPitch" class="text-xs font-mono text-slate-700 bg-white p-3 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed">
 Hi [Client Name],
 
 Thanks for sending over the draft. Regarding Section 6/7, our standard company policy (consistent with technology consulting industry practice) is for liability and indemnification to be mutual and capped at the total contract value over the prior 12 months. 
@@ -675,123 +879,176 @@ I've prepared a balanced mutual redraft for this clause that protects both parti
 
 Best regards,
 [Your Name]
-          </pre>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- TAB 6: MULTILINGUAL ACCESS ENGINE -->
-    <!-- ======================================================== -->
-    <div role="tabpanel" id="tab-multilingual" aria-labelledby="tab-btn-multilingual" class="tab-content hidden space-y-6">
-      
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <i data-lucide="languages" class="w-5 h-5 text-teal-400" aria-hidden="true"></i>
-            <span>Multilingual Legal Access (Democratizing Legal Understanding)</span>
-          </h3>
-          <p class="text-xs text-slate-400">Translates complex legal jargon into plain regional language so everyday citizens and non-native speakers understand their rights.</p>
-        </div>
-
-        <form id="translateForm" class="space-y-4" aria-label="Language translation form">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center space-x-2">
-              <label for="targetLanguageSelect" class="text-xs text-slate-300 font-semibold">Select Target Language:</label>
-              <select id="targetLanguageSelect" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                <option value="Hindi">Hindi (हिन्दी)</option>
-                <option value="Spanish">Spanish (Español)</option>
-                <option value="French">French (Français)</option>
-                <option value="German">German (Deutsch)</option>
-                <option value="Telugu">Telugu (తెలుగు)</option>
-                <option value="Tamil">Tamil (தமிழ்)</option>
-                <option value="Bengali">Bengali (বাংলা)</option>
-                <option value="Portuguese">Portuguese (Português)</option>
-              </select>
-            </div>
-
-            <button type="submit" aria-label="Translate and explain legal document" class="flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg shadow-teal-600/30 transition focus:outline-none focus:ring-2 focus:ring-teal-400">
-              <i data-lucide="globe" class="w-4 h-4" aria-hidden="true"></i>
-              <span>Translate & Explain</span>
-            </button>
+            </pre>
           </div>
-        </form>
+
+        </div>
+
       </div>
 
-      <!-- Translation Results -->
-      <div id="translationResults" aria-live="polite" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+      <!-- ======================================================== -->
+      <!-- TAB 6: MULTILINGUAL ACCESS ENGINE -->
+      <!-- ======================================================== -->
+      <div role="tabpanel" id="tab-multilingual" aria-labelledby="tab-btn-multilingual" class="tab-content hidden space-y-6">
         
-        <div>
-          <span id="transTargetLangBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-teal-950 text-teal-300 border border-teal-800">Hindi (हिन्दी)</span>
-          <h4 id="transTitle" class="text-sm font-bold text-white mt-2">अनुबंध का सरल कानूनी सारांश (Legal Summary)</h4>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+              <i data-lucide="languages" class="w-5 h-5 text-teal-600" aria-hidden="true"></i>
+              <span>Multilingual Legal Access (Democratizing Legal Understanding)</span>
+            </h3>
+            <p class="text-xs text-slate-500">Translates complex legal jargon into plain regional language so everyday citizens and non-native speakers understand their rights.</p>
+          </div>
+
+          <form id="translateForm" class="space-y-4" aria-label="Language translation form">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-2">
+                <label for="targetLanguageSelect" class="text-xs text-slate-700 font-bold">Select Target Language:</label>
+                <select id="targetLanguageSelect" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 font-medium">
+                  <option value="Hindi">Hindi (हिन्दी)</option>
+                  <option value="Spanish">Spanish (Español)</option>
+                  <option value="French">French (Français)</option>
+                  <option value="German">German (Deutsch)</option>
+                  <option value="Telugu">Telugu (తెలుగు)</option>
+                  <option value="Tamil">Tamil (தமிழ்)</option>
+                  <option value="Bengali">Bengali (বাংলা)</option>
+                  <option value="Portuguese">Portuguese (Português)</option>
+                </select>
+              </div>
+
+              <button type="submit" aria-label="Translate and explain legal document" class="flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-teal-400">
+                <i data-lucide="globe" class="w-4 h-4" aria-hidden="true"></i>
+                <span>Translate & Explain</span>
+              </button>
+            </div>
+          </form>
         </div>
 
-        <!-- Plain explanation in regional language -->
-        <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800">
-          <span class="text-xs font-bold text-teal-400 block mb-1">सरल भाषा में आपके अधिकारों का अर्थ (What This Means in Everyday Terms):</span>
-          <p id="transPlainExplanation" class="text-xs text-slate-200 leading-relaxed">
-            इस अनुबंध में आपके लिए सबसे बड़ा खतरा यह है कि पैसे मिलने में 2 महीने तक की देरी हो सकती है, और किसी भी कानूनी विवाद में पूरा हर्जाना आपको ही भुगतना पड़ सकता है जबकि क्लाइंट की जिम्मेदारी बहुत सीमित ($1,000) रखी गई है।
-          </p>
-        </div>
+        <!-- Translation Results -->
+        <div id="translationResults" aria-live="polite" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
+          
+          <div>
+            <span id="transTargetLangBadge" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-teal-50 text-teal-800 border border-teal-200">Hindi (हिन्दी)</span>
+            <h4 id="transTitle" class="text-sm font-bold text-slate-900 mt-2">अनुबंध का सरल कानूनी सारांश (Legal Summary)</h4>
+          </div>
 
-        <!-- Translated Content -->
-        <div>
-          <span class="text-xs font-bold text-slate-300 block mb-1">पूर्ण अनुवाद (Full Translation):</span>
-          <div id="transContent" class="text-xs text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 leading-relaxed whitespace-pre-wrap">
+          <!-- Plain explanation in regional language -->
+          <div class="bg-teal-50/50 p-4 rounded-xl border border-teal-200">
+            <span class="text-xs font-bold text-teal-800 block mb-1">सरल भाषा में आपके अधिकारों का अर्थ (What This Means in Everyday Terms):</span>
+            <p id="transPlainExplanation" class="text-xs text-slate-700 leading-relaxed font-medium">
+              इस अनुबंध में आपके लिए सबसे बड़ा खतरा यह है कि पैसे मिलने में 2 महीने तक की देरी हो सकती है, और किसी भी कानूनी विवाद में पूरा हर्जाना आपको ही भुगतना पड़ सकता है जबकि क्लाइंट की जिम्मेदारी बहुत सीमित ($1,000) रखी गई है।
+            </p>
+          </div>
+
+          <!-- Translated Content -->
+          <div>
+            <span class="text-xs font-bold text-slate-700 block mb-1">पूर्ण अनुवाद (Full Translation):</span>
+            <div id="transContent" class="text-xs text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
 यह समझौता ग्राहक और कांट्रैक्टर के बीच सॉफ्टवेयर विकास के लिए है। इसमें भुगतान की शर्तें 60 दिनों की हैं और यदि कोई विवाद होता है, तो पूरा भुगतान रोका जा सकता है। इसके अलावा, कांट्रैक्टर पर असीमित हर्जाने (Uncapped Indemnity) का जोखिम डाला गया है।
+            </div>
           </div>
-        </div>
 
-        <!-- Glossary of Tricky Legal Terms in Target Language -->
-        <div>
-          <span class="text-xs font-bold text-slate-300 block mb-2">मुख्य कानूनी शब्दकोश (Legal Terms Glossary):</span>
-          <div id="transGlossary" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <!-- Glossary items -->
+          <!-- Glossary of Tricky Legal Terms in Target Language -->
+          <div>
+            <span class="text-xs font-bold text-slate-700 block mb-2">मुख्य कानूनी शब्दकोश (Legal Terms Glossary):</span>
+            <div id="transGlossary" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Glossary items -->
+            </div>
           </div>
+
         </div>
 
       </div>
 
-    </div>
+      <!-- Docked Workflow Actions Bar -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="goToWorkflowStep(2)" class="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5 focus:outline-none">
+          <span>← Choose Different Objective</span>
+        </button>
+        <div class="flex items-center space-x-2">
+          <button onclick="runFullAudit()" class="px-3.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition">
+            🔄 Re-Analyze Document
+          </button>
+          <button onclick="openExportModal()" class="px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition">
+            📄 Export Markdown Report
+          </button>
+        </div>
+      </div>
+
+    </section>
 
   </main>
 
   <!-- ======================================================== -->
+  <!-- MODAL: WORKFLOW PROCESSING ANIMATION (PIPELINE) -->
+  <!-- ======================================================== -->
+  <div id="workflowProcessingModal" role="dialog" aria-modal="true" aria-hidden="true" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 mx-auto flex items-center justify-center shadow-inner">
+        <i data-lucide="cpu" class="w-6 h-6 animate-pulse" aria-hidden="true"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-slate-900">Legal Intelligence Engine Active</h3>
+        <p class="text-xs text-slate-500 mt-1">Executing multi-stage legal verification pipeline...</p>
+      </div>
+
+      <!-- Pipeline checklist stages -->
+      <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2.5 text-xs font-medium text-slate-700">
+        <div class="flex items-center space-x-2" id="pipe-stage-1">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+          <span>1. Ingesting & token-bounding agreement text...</span>
+        </div>
+        <div class="flex items-center space-x-2" id="pipe-stage-2">
+          <i data-lucide="loader-2" class="w-4 h-4 text-indigo-600 animate-spin"></i>
+          <span>2. Auditing liability caps, indemnity & termination risks...</span>
+        </div>
+        <div class="flex items-center space-x-2 text-slate-400" id="pipe-stage-3">
+          <i data-lucide="circle" class="w-4 h-4 text-slate-300"></i>
+          <span>3. Formulating plain-English breakdown & counter-proposals...</span>
+        </div>
+      </div>
+
+      <!-- Animated Progress Bar -->
+      <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+        <div class="bg-indigo-600 h-2 rounded-full workflow-progress-animate"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
   <!-- MODAL: GROQ API KEY CONFIGURATION (WCAG 2.1 Dialog) -->
   <!-- ======================================================== -->
-  <div id="apiKeyModal" role="dialog" aria-modal="true" aria-labelledby="apiKeyModalTitle" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+  <div id="apiKeyModal" role="dialog" aria-modal="true" aria-labelledby="apiKeyModalTitle" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400" aria-hidden="true">
+          <div class="p-2 bg-amber-50 rounded-lg text-amber-600 border border-amber-200" aria-hidden="true">
             <i data-lucide="key" class="w-5 h-5"></i>
           </div>
-          <h3 id="apiKeyModalTitle" class="text-base font-bold text-white">Groq API Key Settings</h3>
+          <h3 id="apiKeyModalTitle" class="text-base font-bold text-slate-900">Groq API Key Settings</h3>
         </div>
-        <button onclick="closeApiKeyModal()" aria-label="Close API Key dialog" class="text-slate-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
+        <button onclick="closeApiKeyModal()" aria-label="Close API Key dialog" class="text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-400">
           <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
         </button>
       </div>
 
-      <p class="text-xs text-slate-300 leading-relaxed">
-        LegalLens AI utilizes <strong class="text-white">Groq's LPU Inference Engine</strong> running <strong class="text-indigo-400">LLaMA 3.3 70B Versatile</strong> for sub-second, state-of-the-art legal analysis.
+      <p class="text-xs text-slate-600 leading-relaxed">
+        LegalLens AI utilizes <strong class="text-slate-900">Groq's LPU Inference Engine</strong> running <strong class="text-indigo-600">LLaMA 3.3 70B Versatile</strong> for sub-second, state-of-the-art legal analysis.
       </p>
 
       <div class="space-y-2">
-        <label for="groqApiKeyInput" class="text-xs font-semibold text-slate-300">Your Groq API Key:</label>
-        <input type="password" id="groqApiKeyInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono" placeholder="gsk_...">
-        <p class="text-[11px] text-slate-500">Don't have a key? Get one for free in 30 seconds at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:underline">console.groq.com</a>.</p>
+        <label for="groqApiKeyInput" class="text-xs font-bold text-slate-700">Your Groq API Key:</label>
+        <input type="password" id="groqApiKeyInput" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono" placeholder="gsk_...">
+        <p class="text-[11px] text-slate-500">Don't have a key? Get one for free in 30 seconds at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-semibold">console.groq.com</a>.</p>
       </div>
 
-      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-        <strong class="text-slate-200">Zero-Friction Hackathon Mode:</strong> If left empty, LegalLens AI automatically operates in High-Fidelity Heuristic Mode, so judges and reviewers can test instantly without barriers!
+      <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600">
+        <strong class="text-slate-900">Zero-Friction Evaluation Mode:</strong> If left empty, LegalLens AI operates in High-Fidelity Heuristic Mode, so judges and reviewers can test instantly without barriers!
       </div>
 
       <div class="flex justify-end space-x-2 pt-2">
-        <button onclick="clearApiKey()" aria-label="Clear active API Key" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-white rounded-lg transition focus:outline-none">Clear Key</button>
-        <button onclick="saveApiKey()" aria-label="Save and apply API Key" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-md transition focus:outline-none focus:ring-2 focus:ring-indigo-400">Save & Apply</button>
+        <button onclick="clearApiKey()" aria-label="Clear active API Key" class="px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition focus:outline-none">Clear Key</button>
+        <button onclick="saveApiKey()" aria-label="Save and apply API Key" class="px-4 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-400">Save & Apply</button>
       </div>
     </div>
   </div>
@@ -799,30 +1056,30 @@ Best regards,
   <!-- ======================================================== -->
   <!-- MODAL: EXPORT AUDIT REPORT (WCAG 2.1 Dialog) -->
   <!-- ======================================================== -->
-  <div id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
         <div class="flex items-center space-x-2">
-          <i data-lucide="file-check" class="w-5 h-5 text-emerald-400" aria-hidden="true"></i>
-          <h3 id="exportModalTitle" class="text-base font-bold text-white">Comprehensive Legal Audit Report</h3>
+          <i data-lucide="file-check" class="w-5 h-5 text-emerald-600" aria-hidden="true"></i>
+          <h3 id="exportModalTitle" class="text-base font-bold text-slate-900">Comprehensive Legal Audit Report</h3>
         </div>
-        <button onclick="closeExportModal()" aria-label="Close export report dialog" class="text-slate-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-emerald-400">
+        <button onclick="closeExportModal()" aria-label="Close export report dialog" class="text-slate-400 hover:text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500">
           <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto pr-1">
-        <pre id="auditReportMarkdown" aria-label="Generated audit report text" class="text-xs font-mono text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800 whitespace-pre-wrap leading-relaxed"></pre>
+        <pre id="auditReportMarkdown" aria-label="Generated audit report text" class="text-xs font-mono text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200 whitespace-pre-wrap leading-relaxed"></pre>
       </div>
 
-      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-        <span class="text-xs text-slate-400">Formatted and ready for legal counsel review</span>
+      <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+        <span class="text-xs text-slate-500 font-medium">Formatted and ready for legal counsel review</span>
         <div class="flex space-x-2">
-          <button onclick="copyElementText('auditReportMarkdown')" aria-label="Copy markdown text" class="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition flex items-center space-x-1 focus:outline-none focus:ring-1 focus:ring-slate-400">
+          <button onclick="copyElementText('auditReportMarkdown')" aria-label="Copy markdown text" class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 transition flex items-center space-x-1 focus:outline-none focus:ring-1 focus:ring-slate-400">
             <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
             <span>Copy Markdown</span>
           </button>
-          <button onclick="window.print()" aria-label="Print or save as PDF" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition flex items-center space-x-1 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+          <button onclick="window.print()" aria-label="Print or save as PDF" class="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition flex items-center space-x-1 focus:outline-none focus:ring-2 focus:ring-emerald-400">
             <i data-lucide="printer" class="w-3.5 h-3.5" aria-hidden="true"></i>
             <span>Print / Save PDF</span>
           </button>
@@ -832,7 +1089,7 @@ Best regards,
   </div>
 
   <!-- FOOTER -->
-  <footer class="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
+  <footer class="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <div>LegalLens AI — Built for PromptWars 2026 (Google for Developers Calibration Track)</div>
       <div class="flex items-center space-x-4">

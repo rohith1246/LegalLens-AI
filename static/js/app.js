@@ -18,7 +18,8 @@ const state = {
   comparisonData: null,
   interrogateHistory: [],
   explainerMode: "eli5", // "eli5" | "exec"
-  userApiKey: localStorage.getItem("legallens_groq_key") || ""
+  userApiKey: localStorage.getItem("legallens_groq_key") || "",
+  workflowStep: 1 // 1 | 2 | 3
 };
 
 // ============================================================
@@ -41,8 +42,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("diffTextB").value = state.samples["msa_comparison_v2"].text;
   }
 
-  // Initial analysis render
-  await runFullAudit();
+  // Initial workflow step
+  goToWorkflowStep(1);
+
+  // Initial background audit prime
+  await runFullAudit(true);
 });
 
 function initLucide() {
@@ -89,7 +93,10 @@ function setupEventListeners() {
   document.getElementById("fileUploadInput").addEventListener("change", handleFileUpload);
 
   // Run Analysis Button
-  document.getElementById("runAnalysisBtn").addEventListener("click", () => runFullAudit());
+  document.getElementById("runAnalysisBtn").addEventListener("click", () => {
+    runFullAudit();
+    goToWorkflowStep(3);
+  });
 
   // Textarea input sync
   const contractInput = document.getElementById("contractTextInput");
@@ -187,6 +194,144 @@ function getAuthHeaders() {
 }
 
 // ============================================================
+// WORKFLOW STEPPER PIPELINE MANAGEMENT
+// ============================================================
+function goToWorkflowStep(step) {
+  state.workflowStep = step;
+
+  const step1El = document.getElementById("stepper-step-1");
+  const step2El = document.getElementById("stepper-step-2");
+  const step3El = document.getElementById("stepper-step-3");
+  const sec1 = document.getElementById("workflow-step-1");
+  const sec2 = document.getElementById("workflow-step-2");
+  const sec3 = document.getElementById("workflow-step-3");
+  const backBtn = document.getElementById("workflowBackBtn");
+  const nextBtn = document.getElementById("workflowNextBtn");
+  const nextText = document.getElementById("workflowNextText");
+
+  // Reset circle classes helper
+  const setCircleStyle = (el, type) => {
+    const circle = el.querySelector(".step-circle");
+    if (type === "active") {
+      circle.className = "step-circle w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
+    } else if (type === "completed") {
+      circle.className = "step-circle w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
+    } else {
+      circle.className = "step-circle w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-300 flex items-center justify-center font-bold text-sm transition-all";
+    }
+  };
+
+  // Step 1 State
+  if (step === 1) {
+    setCircleStyle(step1El, "active");
+    setCircleStyle(step2El, "inactive");
+    setCircleStyle(step3El, "inactive");
+
+    sec1.classList.remove("hidden");
+    sec2.classList.add("hidden");
+    sec3.classList.add("hidden");
+
+    backBtn.classList.add("hidden");
+    nextText.innerText = "Select AI Objective";
+  } 
+  // Step 2 State
+  else if (step === 2) {
+    setCircleStyle(step1El, "completed");
+    setCircleStyle(step2El, "active");
+    setCircleStyle(step3El, "inactive");
+
+    sec1.classList.remove("hidden"); // keep document preview context
+    sec2.classList.remove("hidden");
+    sec3.classList.add("hidden");
+
+    backBtn.classList.remove("hidden");
+    nextText.innerText = "View Intelligence";
+  } 
+  // Step 3 State
+  else if (step === 3) {
+    setCircleStyle(step1El, "completed");
+    setCircleStyle(step2El, "completed");
+    setCircleStyle(step3El, "active");
+
+    sec1.classList.add("hidden");
+    sec2.classList.add("hidden");
+    sec3.classList.remove("hidden");
+
+    backBtn.classList.remove("hidden");
+    nextText.innerText = "Restart Pipeline ↺";
+  }
+
+  initLucide();
+}
+
+function nextWorkflowStep() {
+  if (state.workflowStep === 1) {
+    goToWorkflowStep(2);
+  } else if (state.workflowStep === 2) {
+    executeObjective("tab-simplifier");
+  } else {
+    goToWorkflowStep(1);
+  }
+}
+
+function prevWorkflowStep() {
+  if (state.workflowStep === 3) {
+    goToWorkflowStep(2);
+  } else if (state.workflowStep === 2) {
+    goToWorkflowStep(1);
+  }
+}
+
+async function executeObjective(tabId) {
+  // Show animated pipeline processing dialog
+  const modal = document.getElementById("workflowProcessingModal");
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+
+  const stage1 = document.getElementById("pipe-stage-1");
+  const stage2 = document.getElementById("pipe-stage-2");
+  const stage3 = document.getElementById("pipe-stage-3");
+
+  // Stage 1 animation
+  stage1.className = "flex items-center space-x-2 text-indigo-700 font-bold";
+  initLucide();
+
+  // Run or prime audit if not yet loaded
+  if (!state.analysisData) {
+    await runFullAudit(true);
+  }
+
+  await new Promise(r => setTimeout(r, 300));
+  stage1.className = "flex items-center space-x-2 text-emerald-700 font-medium";
+  stage1.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>1. Ingestion & token bounding complete</span>`;
+
+  stage2.className = "flex items-center space-x-2 text-indigo-700 font-bold";
+  initLucide();
+
+  await new Promise(r => setTimeout(r, 350));
+  stage2.className = "flex items-center space-x-2 text-emerald-700 font-medium";
+  stage2.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>2. Liability & commercial exposure analyzed</span>`;
+
+  stage3.className = "flex items-center space-x-2 text-indigo-700 font-bold";
+  stage3.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>3. Executive intelligence & actions synthesized</span>`;
+  initLucide();
+
+  await new Promise(r => setTimeout(r, 200));
+
+  // Hide modal and switch
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+
+  switchTab(tabId);
+  goToWorkflowStep(3);
+
+  // If Redline Diff tab was chosen, run comparison
+  if (tabId === "tab-redline" && !state.comparisonData) {
+    loadRedlineComparisonSamples();
+  }
+}
+
+// ============================================================
 // TAB NAVIGATION (WCAG 2.1 Accessible)
 // ============================================================
 function switchTab(tabId) {
@@ -196,11 +341,11 @@ function switchTab(tabId) {
     btn.setAttribute("aria-selected", isCurrent ? "true" : "false");
     btn.tabIndex = isCurrent ? 0 : -1;
     if (isCurrent) {
-      btn.classList.add("active", "border-indigo-500", "text-white", "bg-slate-900/60");
-      btn.classList.remove("border-transparent", "text-slate-400");
+      btn.classList.add("active", "border-indigo-600", "text-indigo-900", "bg-slate-50");
+      btn.classList.remove("border-transparent", "text-slate-500");
     } else {
-      btn.classList.remove("active", "border-indigo-500", "text-white", "bg-slate-900/60");
-      btn.classList.add("border-transparent", "text-slate-400");
+      btn.classList.remove("active", "border-indigo-600", "text-indigo-900", "bg-slate-50");
+      btn.classList.add("border-transparent", "text-slate-500");
     }
   });
 
@@ -240,7 +385,6 @@ function loadSampleContract(id) {
   if (state.samples[id]) {
     setContract(state.samples[id]);
     runFullAudit();
-    switchTab("tab-simplifier");
   }
 }
 
@@ -320,7 +464,8 @@ async function handleFileUpload(e) {
     };
 
     setContract(state.activeContract);
-    runFullAudit();
+    await runFullAudit();
+    goToWorkflowStep(2);
   } catch (err) {
     alert(`File upload failed: ${err.message}`);
   } finally {
@@ -332,11 +477,13 @@ async function handleFileUpload(e) {
 // ============================================================
 // 1. CONTRACT SIMPLIFIER & RISK RADAR
 // ============================================================
-async function runFullAudit() {
+async function runFullAudit(isSilent = false) {
   const btn = document.getElementById("runAnalysisBtn");
   const origHTML = btn.innerHTML;
-  btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Analyzing...</span>`;
-  initLucide();
+  if (!isSilent) {
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Auditing...</span>`;
+    initLucide();
+  }
 
   try {
     const res = await fetch("/api/analyze", {
@@ -350,7 +497,7 @@ async function runFullAudit() {
 
     const data = await res.json();
     if (data.error) {
-      alert(`Analysis error: ${data.error}`);
+      if (!isSilent) alert(`Analysis error: ${data.error}`);
       return;
     }
 
@@ -359,8 +506,10 @@ async function runFullAudit() {
   } catch (err) {
     console.error("Audit failed:", err);
   } finally {
-    btn.innerHTML = origHTML;
-    initLucide();
+    if (!isSilent) {
+      btn.innerHTML = origHTML;
+      initLucide();
+    }
   }
 }
 
@@ -380,15 +529,15 @@ function renderAnalysisData(data) {
   const badge = document.getElementById("riskTierBadge");
   if (score >= 75) {
     circle.style.stroke = "#10b981"; // green
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800";
+    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
     badge.innerText = data.risk_tier || "Low Risk / Safe Terms";
   } else if (score >= 50) {
     circle.style.stroke = "#f59e0b"; // amber
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-950/80 text-amber-300 border border-amber-800";
+    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200";
     badge.innerText = data.risk_tier || "Moderate Risk";
   } else {
     circle.style.stroke = "#f43f5e"; // rose
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-rose-950/80 text-rose-300 border border-rose-800";
+    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
     badge.innerText = data.risk_tier || "High Risk Exposure";
   }
 
@@ -417,38 +566,38 @@ function renderAnalysisData(data) {
   // 5. Red Flags Radar
   const redFlagsContainer = document.getElementById("redFlagsContainer");
   if (data.red_flags && data.red_flags.length > 0) {
-    redFlagsContainer.innerHTML = data.red_flags.map((rf, idx) => {
-      let severityBadge = "bg-rose-950 text-rose-300 border-rose-800";
-      if (rf.severity === "Medium") severityBadge = "bg-amber-950 text-amber-300 border-amber-800";
-      if (rf.severity === "Low") severityBadge = "bg-slate-800 text-slate-300 border-slate-700";
+    redFlagsContainer.innerHTML = data.red_flags.map((rf) => {
+      let severityBadge = "bg-rose-50 text-rose-700 border-rose-200";
+      if (rf.severity === "Medium") severityBadge = "bg-amber-50 text-amber-700 border-amber-200";
+      if (rf.severity === "Low") severityBadge = "bg-slate-100 text-slate-700 border-slate-200";
 
       return `
-        <div class="redflag-card bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-md space-y-2">
+        <div class="redflag-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-2">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div class="flex items-center space-x-2">
               <span class="px-2 py-0.5 text-[11px] font-bold rounded-md border ${severityBadge}">${escapeHtml(rf.severity || 'High')}</span>
-              <span class="text-xs font-bold text-white">${escapeHtml(rf.clause_reference || 'Clause')}</span>
-              <span class="text-[11px] text-slate-400">(${escapeHtml(rf.category || 'Legal Risk')})</span>
+              <span class="text-xs font-bold text-slate-900">${escapeHtml(rf.clause_reference || 'Clause')}</span>
+              <span class="text-[11px] text-slate-500">(${escapeHtml(rf.category || 'Legal Risk')})</span>
             </div>
-            <button onclick="prepareClauseRedraft('${escapeHtml(rf.clause_reference)}', '${escapeHtml(rf.problem)}')" class="self-start sm:self-auto flex items-center space-x-1 text-xs font-semibold text-fuchsia-400 hover:text-fuchsia-300 bg-fuchsia-950/40 hover:bg-fuchsia-950/80 px-2.5 py-1 rounded-md border border-fuchsia-800/60 transition">
+            <button onclick="prepareClauseRedraft('${escapeHtml(rf.clause_reference)}', '${escapeHtml(rf.problem)}')" class="self-start sm:self-auto flex items-center space-x-1 text-xs font-semibold text-fuchsia-700 hover:text-fuchsia-800 bg-fuchsia-50 hover:bg-fuchsia-100 px-2.5 py-1 rounded-md border border-fuchsia-200 transition">
               <i data-lucide="pencil-ruler" class="w-3.5 h-3.5"></i>
               <span>Draft Counter-Clause</span>
             </button>
           </div>
-          <div class="text-xs text-slate-300">
-            <strong class="text-slate-200">The Problem:</strong> ${escapeHtml(rf.problem)}
+          <div class="text-xs text-slate-700 font-medium">
+            <strong class="text-slate-900">The Problem:</strong> ${escapeHtml(rf.problem)}
           </div>
-          <div class="text-xs text-rose-300/90 bg-rose-950/20 p-2.5 rounded-lg border border-rose-900/30">
+          <div class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded-lg border border-rose-200 font-medium">
             <strong>Real-World Consequence:</strong> ${escapeHtml(rf.real_world_consequence)}
           </div>
-          <div class="text-xs text-emerald-400 bg-emerald-950/20 p-2.5 rounded-lg border border-emerald-900/30">
+          <div class="text-xs text-emerald-800 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 font-medium">
             <strong>Recommended Remedy:</strong> ${escapeHtml(rf.recommended_remedy)}
           </div>
         </div>
       `;
     }).join("");
   } else {
-    redFlagsContainer.innerHTML = `<div class="p-4 text-xs text-slate-400 bg-slate-900 rounded-xl border border-slate-800">No critical red flags detected.</div>`;
+    redFlagsContainer.innerHTML = `<div class="p-4 text-xs text-slate-500 bg-white rounded-xl border border-slate-200">No critical red flags detected.</div>`;
   }
 
   // 6. Action Checklist
@@ -456,7 +605,7 @@ function renderAnalysisData(data) {
     const checklist = document.getElementById("actionChecklist");
     checklist.innerHTML = data.action_checklist.map(item => `
       <li class="flex items-start space-x-2">
-        <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+        <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
         <span>${escapeHtml(item)}</span>
       </li>
     `).join("");
@@ -471,15 +620,15 @@ function setExplainerMode(mode) {
   const execBtn = document.getElementById("viewExecBtn");
 
   if (mode === "eli5") {
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    eli5Btn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold shadow-sm transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
     eli5Btn.setAttribute("aria-checked", "true");
-    execBtn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    execBtn.className = "px-3 py-1 text-xs rounded-md text-slate-600 hover:text-slate-900 font-semibold transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
     execBtn.setAttribute("aria-checked", "false");
     document.getElementById("summaryHeading").innerText = "Layman's Plain-English Breakdown";
   } else {
-    execBtn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    execBtn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold shadow-sm transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
     execBtn.setAttribute("aria-checked", "true");
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md text-slate-400 hover:text-white font-medium transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
+    eli5Btn.className = "px-3 py-1 text-xs rounded-md text-slate-600 hover:text-slate-900 font-semibold transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
     eli5Btn.setAttribute("aria-checked", "false");
     document.getElementById("summaryHeading").innerText = "Executive Commercial Summary";
   }
@@ -548,11 +697,11 @@ function renderComparisonData(data) {
   deltaBadge.innerText = delta;
 
   if (delta.toLowerCase().includes("favorable")) {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800";
+    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
   } else if (delta.toLowerCase().includes("risk")) {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-950 text-rose-300 border border-rose-800";
+    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
   } else {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-800 text-slate-300 border border-slate-700";
+    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700 border border-slate-200";
   }
 
   document.getElementById("redlineScoreDelta").innerText = data.score_delta || "";
@@ -563,37 +712,37 @@ function renderComparisonData(data) {
   const shiftsContainer = document.getElementById("clauseShiftsContainer");
   if (data.clause_changes && data.clause_changes.length > 0) {
     shiftsContainer.innerHTML = data.clause_changes.map(change => {
-      let impactBadge = "bg-emerald-950 text-emerald-300 border-emerald-800";
-      if (change.impact === "High Risk") impactBadge = "bg-rose-950 text-rose-300 border-rose-800";
-      if (change.impact === "Neutral") impactBadge = "bg-slate-800 text-slate-300 border-slate-700";
+      let impactBadge = "bg-emerald-50 text-emerald-700 border-emerald-200";
+      if (change.impact === "High Risk") impactBadge = "bg-rose-50 text-rose-700 border-rose-200";
+      if (change.impact === "Neutral") impactBadge = "bg-slate-100 text-slate-700 border-slate-200";
 
       return `
-        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-3">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-white">${escapeHtml(change.section_title)}</span>
+            <span class="text-xs font-bold text-slate-900">${escapeHtml(change.section_title)}</span>
             <div class="flex items-center space-x-2">
-              <span class="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-slate-800 text-slate-300">${escapeHtml(change.change_type || 'Modified')}</span>
+              <span class="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-slate-200 text-slate-700">${escapeHtml(change.change_type || 'Modified')}</span>
               <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${impactBadge}">${escapeHtml(change.impact)}</span>
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
-              <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Version 1 (Original)</span>
-              <p class="text-slate-300">${escapeHtml(change.original_intent)}</p>
+            <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+              <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Version 1 (Original)</span>
+              <p class="text-slate-700">${escapeHtml(change.original_intent)}</p>
             </div>
-            <div class="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
-              <span class="text-[10px] uppercase font-bold text-indigo-400 block mb-1">Version 2 (Redline)</span>
-              <p class="text-slate-200">${escapeHtml(change.revised_intent)}</p>
+            <div class="bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-200">
+              <span class="text-[10px] uppercase font-bold text-indigo-700 block mb-1">Version 2 (Redline)</span>
+              <p class="text-slate-800">${escapeHtml(change.revised_intent)}</p>
             </div>
           </div>
-          <div class="text-xs text-indigo-300/90 bg-indigo-950/30 p-2.5 rounded-lg border border-indigo-900/40">
+          <div class="text-xs text-indigo-900 bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-200">
             <strong>Legal Impact & Analysis:</strong> ${escapeHtml(change.analysis)}
           </div>
         </div>
       `;
     }).join("");
   } else {
-    shiftsContainer.innerHTML = `<div class="p-3 text-xs text-slate-400">No major substantive clause shifts detected.</div>`;
+    shiftsContainer.innerHTML = `<div class="p-3 text-xs text-slate-500">No major substantive clause shifts detected.</div>`;
   }
 
   initLucide();
@@ -609,11 +758,11 @@ async function askInterrogator(question) {
   const userMsgEl = document.createElement("div");
   userMsgEl.className = "flex items-start space-x-3 justify-end";
   userMsgEl.innerHTML = `
-    <div class="bg-indigo-600 text-white p-3.5 rounded-2xl max-w-xl text-xs shadow-md">
+    <div class="bg-indigo-600 text-white p-3.5 rounded-2xl max-w-xl text-xs shadow-sm font-medium">
       ${escapeHtml(question)}
     </div>
-    <div class="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center shrink-0">
-      <i data-lucide="user" class="w-4 h-4 text-white"></i>
+    <div class="w-7 h-7 rounded-lg bg-indigo-700 flex items-center justify-center shrink-0 text-white">
+      <i data-lucide="user" class="w-4 h-4"></i>
     </div>
   `;
   container.appendChild(userMsgEl);
@@ -624,11 +773,11 @@ async function askInterrogator(question) {
   const loadingEl = document.createElement("div");
   loadingEl.className = "flex items-start space-x-3";
   loadingEl.innerHTML = `
-    <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0">
-      <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+    <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0 text-white">
+      <i data-lucide="bot" class="w-4 h-4"></i>
     </div>
-    <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-2xl max-w-xl text-xs text-slate-400 flex items-center space-x-2">
-      <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-400"></i>
+    <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl max-w-xl text-xs text-slate-500 flex items-center space-x-2">
+      <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-600"></i>
       <span>Researching contract clauses...</span>
     </div>
   `;
@@ -653,7 +802,7 @@ async function askInterrogator(question) {
 
     if (data.error) {
       const errEl = document.createElement("div");
-      errEl.className = "text-xs text-rose-400 p-2";
+      errEl.className = "text-xs text-rose-600 p-2 font-bold";
       errEl.innerText = `Error: ${data.error}`;
       container.appendChild(errEl);
       return;
@@ -666,16 +815,16 @@ async function askInterrogator(question) {
     let citationsHtml = "";
     if (data.clause_citations && data.clause_citations.length > 0) {
       citationsHtml = `
-        <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
-          <span class="text-[10px] uppercase font-bold text-sky-400 block">Verified Clause Citations:</span>
+        <div class="space-y-1.5 pt-2 border-t border-slate-200">
+          <span class="text-[10px] uppercase font-bold text-sky-700 block">Verified Clause Citations:</span>
           ${data.clause_citations.map(c => `
-            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-sky-900/40 text-xs">
+            <div class="bg-white p-2.5 rounded-lg border border-sky-200 text-xs">
               <div class="flex items-center justify-between mb-1">
-                <strong class="text-sky-300">${escapeHtml(c.clause_name)}</strong>
-                <button onclick="highlightInInspector('${escapeHtml(c.clause_name)}')" class="text-[10px] text-sky-400 hover:underline">View in Contract</button>
+                <strong class="text-sky-900">${escapeHtml(c.clause_name)}</strong>
+                <button onclick="highlightInInspector('${escapeHtml(c.clause_name)}')" class="text-[10px] text-sky-600 font-semibold hover:underline">View in Contract</button>
               </div>
-              <blockquote class="italic text-slate-300 border-l-2 border-sky-500 pl-2 text-[11px] mb-1">"${escapeHtml(c.quote)}"</blockquote>
-              <p class="text-slate-400 text-[11px]">${escapeHtml(c.explanation)}</p>
+              <blockquote class="italic text-slate-700 border-l-2 border-sky-500 pl-2 text-[11px] mb-1">"${escapeHtml(c.quote)}"</blockquote>
+              <p class="text-slate-600 text-[11px]">${escapeHtml(c.explanation)}</p>
             </div>
           `).join("")}
         </div>
@@ -685,7 +834,7 @@ async function askInterrogator(question) {
     let tacticalHtml = "";
     if (data.tactical_advice) {
       tacticalHtml = `
-        <div class="bg-amber-950/30 border border-amber-900/40 p-2.5 rounded-lg text-[11px] text-amber-300">
+        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-lg text-[11px] text-amber-800 font-medium">
           <strong>Tactical Precaution:</strong> ${escapeHtml(data.tactical_advice)}
         </div>
       `;
@@ -695,9 +844,9 @@ async function askInterrogator(question) {
     if (data.suggested_followups && data.suggested_followups.length > 0) {
       followupsHtml = `
         <div class="pt-1 flex flex-wrap gap-1.5">
-          <span class="text-[10px] text-slate-500 self-center">Follow-up:</span>
+          <span class="text-[10px] text-slate-400 self-center">Follow-up:</span>
           ${data.suggested_followups.map(f => `
-            <button onclick="askInterrogator('${escapeHtml(f)}')" class="text-[10px] bg-slate-900 hover:bg-slate-800 text-sky-300 px-2 py-0.5 rounded-md border border-slate-800 transition">
+            <button onclick="askInterrogator('${escapeHtml(f)}')" class="text-[10px] bg-white hover:bg-slate-100 text-sky-700 px-2 py-0.5 rounded-md border border-slate-200 shadow-sm transition">
               ${escapeHtml(f)}
             </button>
           `).join("")}
@@ -706,11 +855,11 @@ async function askInterrogator(question) {
     }
 
     assistantMsgEl.innerHTML = `
-      <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0">
-        <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0 text-white">
+        <i data-lucide="bot" class="w-4 h-4"></i>
       </div>
-      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-2xl text-slate-200 space-y-3 shadow-lg">
-        <p class="leading-relaxed text-xs">${escapeHtml(data.answer)}</p>
+      <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl max-w-2xl text-slate-800 space-y-3 shadow-sm">
+        <p class="leading-relaxed text-xs font-medium">${escapeHtml(data.answer)}</p>
         ${citationsHtml}
         ${tacticalHtml}
         ${followupsHtml}
@@ -732,7 +881,7 @@ async function askInterrogator(question) {
 }
 
 function highlightInInspector(clauseName) {
-  toggleInspector(true);
+  toggleInspector();
   const inspector = document.getElementById("contractInspector");
   inspector.classList.remove("hidden");
   document.getElementById("inspectorBtnText").innerText = "Hide Contract Text";
@@ -804,11 +953,11 @@ function renderScenarioData(data, scenario) {
   const lev = data.user_leverage || "Moderate";
   badge.innerText = lev;
   if (lev.toLowerCase().includes("strong")) {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800";
+    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
   } else if (lev.toLowerCase().includes("moderate")) {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-950 text-amber-300 border border-amber-800";
+    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200";
   } else {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-950 text-rose-300 border border-rose-800";
+    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
   }
 
   // Action plan list
@@ -831,6 +980,7 @@ function renderScenarioData(data, scenario) {
 // ============================================================
 function prepareClauseRedraft(clauseRef, problem) {
   switchTab("tab-redraft");
+  goToWorkflowStep(3);
   const textarea = document.getElementById("redraftClauseInput");
   
   // Search the active contract text for this clause if possible
@@ -937,12 +1087,12 @@ function renderTranslationData(data) {
   const glossaryContainer = document.getElementById("transGlossary");
   if (data.key_terms_glossary && data.key_terms_glossary.length > 0) {
     glossaryContainer.innerHTML = data.key_terms_glossary.map(item => `
-      <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
         <div class="flex items-center justify-between text-xs mb-1">
-          <strong class="text-white">${escapeHtml(item.english_term)}</strong>
-          <span class="text-teal-400 font-bold">${escapeHtml(item.translated_term)}</span>
+          <strong class="text-slate-900">${escapeHtml(item.english_term)}</strong>
+          <span class="text-teal-700 font-bold">${escapeHtml(item.translated_term)}</span>
         </div>
-        <p class="text-[11px] text-slate-400 leading-snug">${escapeHtml(item.meaning)}</p>
+        <p class="text-[11px] text-slate-600 leading-snug">${escapeHtml(item.meaning)}</p>
       </div>
     `).join("");
   } else {
