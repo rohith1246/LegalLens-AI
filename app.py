@@ -57,6 +57,10 @@ logger = logging.getLogger("LegalLensApp")
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.getenv("SECRET_KEY", "legallens-ai-promptwars-secret-2026")
 
+# Enable ProxyFix to handle Render reverse-proxy headers properly
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 # Efficiency: Enable automated Gzip / Brotli response compression
 Compress(app)
 
