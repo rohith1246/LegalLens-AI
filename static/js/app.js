@@ -1,52 +1,24 @@
 /**
- * LegalLens AI - Frontend Application Core
- * AI Legal Copilot & Contract Intelligence
- * PromptWars 2026 (Google for Developers Track)
+ * FairShift - Frontend Application Logic
+ * Implements:
+ * 1. Attendance & Overtime Shift Tracking
+ * 2. Transparent Multilingual Payslip Engine (English, Hindi, Tamil)
+ * 3. Zero-Knowledge Anonymous Grievance & Safety Reporting
+ * Supports Construction & College Industries
  */
 
-// Application State
 const state = {
-  activeContract: {
-    id: "msa_freelance",
-    title: "Freelance Master Services Agreement (MSA)",
-    category: "Services & Independent Contractor",
-    parties: "Acme Innovations Inc. (Client) & Alex Rivera (Contractor)",
-    text: ""
-  },
-  samples: {},
-  analysisData: null,
-  comparisonData: null,
-  interrogateHistory: [],
-  explainerMode: "eli5", // "eli5" | "exec"
-  userApiKey: localStorage.getItem("legallens_groq_key") || "",
-  workflowStep: 1 // 1 | 2 | 3
+  industry: "construction",
+  role: "worker",
+  language: "en",
+  workers: [],
+  selectedWorkerId: null,
+  activeCheckIn: null
 };
 
-// ============================================================
-// INITIALIZATION
-// ============================================================
 document.addEventListener("DOMContentLoaded", async () => {
   initLucide();
-  setupEventListeners();
-  await checkEngineStatus();
-  await fetchSampleContracts();
-  
-  // Load default freelance MSA
-  if (state.samples["msa_freelance"]) {
-    setContract(state.samples["msa_freelance"]);
-  }
-  
-  // Set default redline texts
-  if (state.samples["msa_freelance"] && state.samples["msa_comparison_v2"]) {
-    document.getElementById("diffTextA").value = state.samples["msa_freelance"].text;
-    document.getElementById("diffTextB").value = state.samples["msa_comparison_v2"].text;
-  }
-
-  // Initial workflow step
-  goToWorkflowStep(1);
-
-  // Initial background audit prime
-  await runFullAudit(true);
+  await refreshAll();
 });
 
 function initLucide() {
@@ -55,1172 +27,435 @@ function initLucide() {
   }
 }
 
-// ============================================================
-// EVENT LISTENERS SETUP
-// ============================================================
-function setupEventListeners() {
-  // Tab Switching
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const tabId = btn.getAttribute("data-tab");
-      switchTab(tabId);
-    });
-  });
-
-  // Sample Dropdown
-  const sampleDropdownBtn = document.getElementById("sampleDropdownBtn");
-  const sampleDropdownMenu = document.getElementById("sampleDropdownMenu");
-  if (sampleDropdownBtn && sampleDropdownMenu) {
-    sampleDropdownBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      sampleDropdownMenu.classList.toggle("hidden");
-    });
-    document.addEventListener("click", () => {
-      sampleDropdownMenu.classList.add("hidden");
-    });
-  }
-
-  // API Key Modal
-  document.getElementById("apiKeyModalBtn").addEventListener("click", openApiKeyModal);
-
-  // Export Report Modal
-  document.getElementById("exportReportBtn").addEventListener("click", openExportModal);
-
-  // Inspector Toggle
-  document.getElementById("toggleInspectorBtn").addEventListener("click", toggleInspector);
-
-  // File Upload
-  document.getElementById("fileUploadInput").addEventListener("change", handleFileUpload);
-
-  // Run Analysis Button
-  document.getElementById("runAnalysisBtn").addEventListener("click", () => {
-    runFullAudit();
-    goToWorkflowStep(3);
-  });
-
-  // Textarea input sync
-  const contractInput = document.getElementById("contractTextInput");
-  contractInput.addEventListener("input", (e) => {
-    state.activeContract.text = e.target.value;
-    updateCharCount();
-  });
-
-  // Explainer View Toggles
-  document.getElementById("viewEli5Btn").addEventListener("click", () => setExplainerMode("eli5"));
-  document.getElementById("viewExecBtn").addEventListener("click", () => setExplainerMode("exec"));
-
-  // Redliner Compare
-  document.getElementById("runComparisonBtn").addEventListener("click", runComparison);
-
-  // Interrogator Form
-  document.getElementById("interrogateForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const input = document.getElementById("interrogateInput");
-    const q = input.value.trim();
-    if (q) {
-      askInterrogator(q);
-      input.value = "";
-    }
-  });
-
-  // Scenario Simulator Form
-  document.getElementById("scenarioForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const input = document.getElementById("scenarioInput");
-    const scenario = input.value.trim();
-    if (scenario) {
-      runScenarioSimulation(scenario);
-    }
-  });
-
-  // Redraft Drafter Form
-  document.getElementById("redraftForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const clause = document.getElementById("redraftClauseInput").value.trim();
-    const goal = document.getElementById("redraftGoalSelect").value;
-    if (clause) {
-      runClauseRedraft(clause, goal);
-    }
-  });
-
-  // Multilingual Form
-  document.getElementById("translateForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const lang = document.getElementById("targetLanguageSelect").value;
-    runTranslation(lang);
-  });
+async function refreshAll() {
+  await loadWorkers();
+  await loadStats();
+  await loadAttendance();
+  await loadGrievances();
 }
 
 // ============================================================
-// SYSTEM & SAMPLES API CALLS
+// INDUSTRY & ROLE SWITCHING
 // ============================================================
-async function checkEngineStatus() {
-  try {
-    const res = await fetch("/api/status", {
-      headers: getAuthHeaders()
-    });
-    const data = await res.json();
-    const label = document.getElementById("engineStatusLabel");
-    if (data.has_custom_key || state.userApiKey) {
-      label.innerText = "Engine: Groq LLaMA 3.3 70B (Ultra-Fast)";
-    } else {
-      label.innerText = "Engine: LegalLens High-Fidelity Engine";
-    }
-  } catch (err) {
-    console.error("Status check failed:", err);
-  }
-}
 
-async function fetchSampleContracts() {
-  try {
-    const res = await fetch("/api/samples");
-    const data = await res.json();
-    if (data.samples) {
-      data.samples.forEach(s => {
-        state.samples[s.id] = s;
-      });
-    }
-  } catch (err) {
-    console.error("Failed to load sample contracts:", err);
-  }
-}
+async function changeIndustry() {
+  const select = document.getElementById("industrySelect");
+  state.industry = select.value;
 
-function getAuthHeaders() {
-  const headers = { "Content-Type": "application/json" };
-  if (state.userApiKey) {
-    headers["X-Groq-Key"] = state.userApiKey;
-  }
-  return headers;
-}
+  const icon = document.getElementById("industryIcon");
+  const title = document.getElementById("industryTitle");
+  const desc = document.getElementById("industryDesc");
 
-// ============================================================
-// WORKFLOW STEPPER PIPELINE MANAGEMENT
-// ============================================================
-function goToWorkflowStep(step) {
-  state.workflowStep = step;
-
-  const step1El = document.getElementById("stepper-step-1");
-  const step2El = document.getElementById("stepper-step-2");
-  const step3El = document.getElementById("stepper-step-3");
-  const sec1 = document.getElementById("workflow-step-1");
-  const sec2 = document.getElementById("workflow-step-2");
-  const sec3 = document.getElementById("workflow-step-3");
-  const backBtn = document.getElementById("workflowBackBtn");
-  const nextBtn = document.getElementById("workflowNextBtn");
-  const nextText = document.getElementById("workflowNextText");
-
-  // Reset circle classes helper
-  const setCircleStyle = (el, type) => {
-    const circle = el.querySelector(".step-circle");
-    if (type === "active") {
-      circle.className = "step-circle w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
-    } else if (type === "completed") {
-      circle.className = "step-circle w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-all";
-    } else {
-      circle.className = "step-circle w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-300 flex items-center justify-center font-bold text-sm transition-all";
-    }
-  };
-
-  // Step 1 State
-  if (step === 1) {
-    setCircleStyle(step1El, "active");
-    setCircleStyle(step2El, "inactive");
-    setCircleStyle(step3El, "inactive");
-
-    sec1.classList.remove("hidden");
-    sec2.classList.add("hidden");
-    sec3.classList.add("hidden");
-
-    backBtn.classList.add("hidden");
-    nextText.innerText = "Select AI Objective";
-  } 
-  // Step 2 State
-  else if (step === 2) {
-    setCircleStyle(step1El, "completed");
-    setCircleStyle(step2El, "active");
-    setCircleStyle(step3El, "inactive");
-
-    sec1.classList.remove("hidden"); // keep document preview context
-    sec2.classList.remove("hidden");
-    sec3.classList.add("hidden");
-
-    backBtn.classList.remove("hidden");
-    nextText.innerText = "View Intelligence";
-  } 
-  // Step 3 State
-  else if (step === 3) {
-    setCircleStyle(step1El, "completed");
-    setCircleStyle(step2El, "completed");
-    setCircleStyle(step3El, "active");
-
-    sec1.classList.add("hidden");
-    sec2.classList.add("hidden");
-    sec3.classList.remove("hidden");
-
-    backBtn.classList.remove("hidden");
-    nextText.innerText = "Restart Pipeline ↺";
-  }
-
-  initLucide();
-}
-
-function nextWorkflowStep() {
-  if (state.workflowStep === 1) {
-    goToWorkflowStep(2);
-  } else if (state.workflowStep === 2) {
-    executeObjective("tab-simplifier");
+  if (state.industry === "construction") {
+    icon.innerHTML = `<i data-lucide="hard-hat" class="w-5 h-5"></i>`;
+    title.innerText = "Active Sector: Construction Site Operations (Skyline Infrastructure)";
+    desc.innerText = "Monitoring high-risk site shifts, automated overtime multipliers, scaffolding hazard reporting, and fair wage calculation.";
   } else {
-    goToWorkflowStep(1);
-  }
-}
-
-function prevWorkflowStep() {
-  if (state.workflowStep === 3) {
-    goToWorkflowStep(2);
-  } else if (state.workflowStep === 2) {
-    goToWorkflowStep(1);
-  }
-}
-
-async function executeObjective(tabId) {
-  // Show animated pipeline processing dialog
-  const modal = document.getElementById("workflowProcessingModal");
-  modal.classList.remove("hidden");
-  modal.setAttribute("aria-hidden", "false");
-
-  const stage1 = document.getElementById("pipe-stage-1");
-  const stage2 = document.getElementById("pipe-stage-2");
-  const stage3 = document.getElementById("pipe-stage-3");
-
-  // Stage 1 animation
-  stage1.className = "flex items-center space-x-2 text-indigo-700 font-bold";
-  initLucide();
-
-  // Run or prime audit if not yet loaded
-  if (!state.analysisData) {
-    await runFullAudit(true);
+    icon.innerHTML = `<i data-lucide="graduation-cap" class="w-5 h-5"></i>`;
+    title.innerText = "Active Sector: College Operations (SRM University Campus Facilities)";
+    desc.innerText = "Managing campus sanitation shifts, security rosters, laboratory hazard reports, and transparent hourly wages.";
   }
 
-  await new Promise(r => setTimeout(r, 300));
-  stage1.className = "flex items-center space-x-2 text-emerald-700 font-medium";
-  stage1.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>1. Ingestion & token bounding complete</span>`;
-
-  stage2.className = "flex items-center space-x-2 text-indigo-700 font-bold";
-  initLucide();
-
-  await new Promise(r => setTimeout(r, 350));
-  stage2.className = "flex items-center space-x-2 text-emerald-700 font-medium";
-  stage2.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>2. Liability & commercial exposure analyzed</span>`;
-
-  stage3.className = "flex items-center space-x-2 text-indigo-700 font-bold";
-  stage3.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i><span>3. Executive intelligence & actions synthesized</span>`;
-  initLucide();
-
-  await new Promise(r => setTimeout(r, 200));
-
-  // Hide modal and switch
-  modal.classList.add("hidden");
-  modal.setAttribute("aria-hidden", "true");
-
-  switchTab(tabId);
-  goToWorkflowStep(3);
-
-  // If Redline Diff tab was chosen, run comparison
-  if (tabId === "tab-redline" && !state.comparisonData) {
-    loadRedlineComparisonSamples();
-  }
-}
-
-// ============================================================
-// TAB NAVIGATION (WCAG 2.1 Accessible)
-// ============================================================
-function switchTab(tabId) {
-  // Tab buttons styling and ARIA states
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    const isCurrent = btn.getAttribute("data-tab") === tabId;
-    btn.setAttribute("aria-selected", isCurrent ? "true" : "false");
-    btn.tabIndex = isCurrent ? 0 : -1;
-    if (isCurrent) {
-      btn.classList.add("active", "border-indigo-600", "text-indigo-900", "bg-slate-50");
-      btn.classList.remove("border-transparent", "text-slate-500");
-    } else {
-      btn.classList.remove("active", "border-indigo-600", "text-indigo-900", "bg-slate-50");
-      btn.classList.add("border-transparent", "text-slate-500");
-    }
-  });
-
-  // Tab contents visibility
-  document.querySelectorAll(".tab-content").forEach(content => {
-    if (content.id === tabId) {
-      content.classList.remove("hidden");
-    } else {
-      content.classList.add("hidden");
-    }
-  });
-
+  await refreshAll();
   initLucide();
 }
 
-// ============================================================
-// CONTRACT MANAGEMENT & LOADING
-// ============================================================
-function setContract(sample) {
-  state.activeContract = {
-    id: sample.id,
-    title: sample.title,
-    category: sample.category || "General Agreement",
-    parties: sample.parties || "Contracting Parties",
-    text: sample.text
-  };
+function switchRole(role) {
+  state.role = role;
+  const workerView = document.getElementById("workerView");
+  const employerView = document.getElementById("employerView");
+  const workerBtn = document.getElementById("roleWorkerBtn");
+  const employerBtn = document.getElementById("roleEmployerBtn");
 
-  document.getElementById("activeContractTitle").innerText = state.activeContract.title;
-  document.getElementById("activeContractCategory").innerText = state.activeContract.category;
-  document.getElementById("activeContractParties").innerText = `Parties: ${state.activeContract.parties}`;
-  document.getElementById("contractTextInput").value = state.activeContract.text;
-  
-  updateCharCount();
-}
-
-function loadSampleContract(id) {
-  if (state.samples[id]) {
-    setContract(state.samples[id]);
-    runFullAudit();
-  }
-}
-
-function loadSampleContractV1() {
-  if (state.samples["msa_freelance"]) {
-    document.getElementById("diffTextA").value = state.samples["msa_freelance"].text;
-  }
-}
-
-function loadSampleContractV2() {
-  if (state.samples["msa_comparison_v2"]) {
-    document.getElementById("diffTextB").value = state.samples["msa_comparison_v2"].text;
-  }
-}
-
-function loadRedlineComparisonSamples() {
-  loadSampleContractV1();
-  loadSampleContractV2();
-  switchTab("tab-redline");
-  runComparison();
-}
-
-function updateCharCount() {
-  const len = state.activeContract.text.length;
-  const words = state.activeContract.text.trim().split(/\s+/).filter(Boolean).length;
-  document.getElementById("charCountLabel").innerText = `${len.toLocaleString()} chars • ${words.toLocaleString()} words`;
-}
-
-function toggleInspector() {
-  const inspector = document.getElementById("contractInspector");
-  const btn = document.getElementById("toggleInspectorBtn");
-  const btnText = document.getElementById("inspectorBtnText");
-  const isHidden = inspector.classList.contains("hidden");
-  
-  if (isHidden) {
-    inspector.classList.remove("hidden");
-    inspector.setAttribute("aria-hidden", "false");
-    btn.setAttribute("aria-expanded", "true");
-    btnText.innerText = "Hide Contract Text";
+  if (role === "worker") {
+    workerView.classList.remove("hidden");
+    employerView.classList.add("hidden");
+    workerBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-brand-600 text-white shadow-sm transition flex items-center space-x-1.5 focus:outline-none";
+    employerBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition flex items-center space-x-1.5 focus:outline-none";
   } else {
-    inspector.classList.add("hidden");
-    inspector.setAttribute("aria-hidden", "true");
-    btn.setAttribute("aria-expanded", "false");
-    btnText.innerText = "View Contract Text";
+    workerView.classList.add("hidden");
+    employerView.classList.remove("hidden");
+    employerBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-brand-600 text-white shadow-sm transition flex items-center space-x-1.5 focus:outline-none";
+    workerBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition flex items-center space-x-1.5 focus:outline-none";
+    loadStats();
+    loadAttendance();
+    loadGrievances();
+  }
+  initLucide();
+}
+
+// ============================================================
+// WORKER MANAGEMENT & IDENTITY
+// ============================================================
+
+async function loadWorkers() {
+  try {
+    const res = await fetch(`/api/workers?industry=${state.industry}`);
+    const data = await res.json();
+    state.workers = data;
+
+    const select = document.getElementById("workerSelector");
+    select.innerHTML = data.map(w => `<option value="${w.id}">${w.name} (${w.role})</option>`).join("");
+
+    if (data.length > 0) {
+      state.selectedWorkerId = data[0].id;
+      updateWorkerDisplay(data[0]);
+      await fetchWorkerPayslip();
+    }
+
+    document.getElementById("workerCountBadge").innerText = `${data.length} Active Workers`;
+  } catch (err) {
+    console.error("Failed to load workers:", err);
   }
 }
 
-async function handleFileUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+function onWorkerChange() {
+  const select = document.getElementById("workerSelector");
+  const workerId = parseInt(select.value);
+  state.selectedWorkerId = workerId;
+  const worker = state.workers.find(w => w.id === workerId);
+  if (worker) {
+    updateWorkerDisplay(worker);
+    fetchWorkerPayslip();
+  }
+}
 
-  const formData = new FormData();
-  formData.append("file", file);
+function updateWorkerDisplay(worker) {
+  document.getElementById("currentWorkerName").innerText = worker.name;
+  document.getElementById("currentWorkerRole").innerText = worker.role;
+  document.getElementById("currentWorkerCode").innerText = worker.worker_code;
+}
 
-  const btn = document.getElementById("runAnalysisBtn");
-  const originalText = btn.innerHTML;
-  btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Extracting...</span>`;
-  initLucide();
+// ============================================================
+// FEATURE 1: ATTENDANCE & OVERTIME SHIFT TRACKING
+// ============================================================
+
+async function doCheckIn() {
+  if (!state.selectedWorkerId) return;
 
   try {
-    const res = await fetch("/api/upload", {
+    const res = await fetch("/api/check-in", {
       method: "POST",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ worker_id: state.selectedWorkerId })
     });
     const data = await res.json();
-    if (data.error) {
-      alert(`Upload Error: ${data.error}`);
-      return;
-    }
+    
+    const badge = document.getElementById("shiftStatusBadge");
+    badge.className = "px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+    badge.innerText = "Shift In Progress (Clocked In)";
 
-    state.activeContract = {
-      id: "uploaded_doc",
-      title: data.filename,
-      category: "Uploaded Document",
-      parties: "Detected from content",
-      text: data.text
-    };
-
-    setContract(state.activeContract);
-    await runFullAudit();
-    goToWorkflowStep(2);
+    alert(data.message || "Clocked in successfully!");
+    await refreshAll();
   } catch (err) {
-    alert(`File upload failed: ${err.message}`);
-  } finally {
-    btn.innerHTML = originalText;
-    initLucide();
+    alert("Check-in failed: " + err.message);
   }
 }
 
-// ============================================================
-// 1. CONTRACT SIMPLIFIER & RISK RADAR
-// ============================================================
-async function runFullAudit(isSilent = false) {
-  const btn = document.getElementById("runAnalysisBtn");
-  const origHTML = btn.innerHTML;
-  if (!isSilent) {
-    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Auditing...</span>`;
-    initLucide();
-  }
+async function doCheckOut() {
+  if (!state.selectedWorkerId) return;
+  const hoursInput = document.getElementById("simulatedHoursInput");
+  const simulatedHours = parseFloat(hoursInput.value) || 10.5;
 
   try {
-    const res = await fetch("/api/analyze", {
+    const res = await fetch("/api/check-out", {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: state.activeContract.text,
-        api_key: state.userApiKey
+        worker_id: state.selectedWorkerId,
+        simulated_hours: simulatedHours
       })
     });
-
     const data = await res.json();
     if (data.error) {
-      if (!isSilent) alert(`Analysis error: ${data.error}`);
+      alert(data.error);
       return;
     }
 
-    state.analysisData = data;
-    renderAnalysisData(data);
+    const badge = document.getElementById("shiftStatusBadge");
+    badge.className = "px-2 py-0.5 text-[11px] font-bold rounded-full bg-slate-100 text-slate-700";
+    badge.innerText = "Shift Completed";
+
+    const otText = data.attendance.overtime_hours > 0 ? ` including ${data.attendance.overtime_hours} hrs overtime (1.5x)` : "";
+    alert(`Clock-out recorded! Logged ${data.attendance.total_hours} hrs${otText}. Transparent payslip updated.`);
+
+    await fetchWorkerPayslip();
+    await loadAttendance();
+    await loadStats();
   } catch (err) {
-    console.error("Audit failed:", err);
-  } finally {
-    if (!isSilent) {
-      btn.innerHTML = origHTML;
-      initLucide();
+    alert("Check-out failed: " + err.message);
+  }
+}
+
+// ============================================================
+// FEATURE 2: TRANSPARENT MULTILINGUAL PAYSLIP
+// ============================================================
+
+function setPayslipLanguage(lang) {
+  state.language = lang;
+  
+  ["en", "hi", "ta"].forEach(l => {
+    const btn = document.getElementById(`lang${l.charAt(0).toUpperCase() + l.slice(1)}Btn`);
+    if (l === lang) {
+      btn.className = "px-2 py-0.5 text-[11px] font-bold rounded bg-indigo-600 text-white";
+    } else {
+      btn.className = "px-2 py-0.5 text-[11px] font-bold rounded bg-slate-100 text-slate-700";
     }
-  }
+  });
+
+  fetchWorkerPayslip();
 }
 
-function renderAnalysisData(data) {
-  // 1. Health Score & Meter
-  const score = Math.max(0, Math.min(100, data.overall_health_score || 50));
-  const scoreDisplay = document.getElementById("scoreDisplay");
-  scoreDisplay.innerText = score;
+async function fetchWorkerPayslip() {
+  if (!state.selectedWorkerId) return;
 
-  // Circle gauge math (circumference = 2 * PI * 42 ~= 264)
-  const circle = document.getElementById("scoreMeterCircle");
-  const circumference = 264;
-  const offset = circumference - (score / 100) * circumference;
-  circle.style.strokeDashoffset = offset;
+  try {
+    const res = await fetch(`/api/payslip/${state.selectedWorkerId}?lang=${state.language}`);
+    const data = await res.json();
+    if (data.error) return;
 
-  // Colors based on score
-  const badge = document.getElementById("riskTierBadge");
-  if (score >= 75) {
-    circle.style.stroke = "#10b981"; // green
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-    badge.innerText = data.risk_tier || "Low Risk / Safe Terms";
-  } else if (score >= 50) {
-    circle.style.stroke = "#f59e0b"; // amber
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200";
-    badge.innerText = data.risk_tier || "Moderate Risk";
-  } else {
-    circle.style.stroke = "#f43f5e"; // rose
-    badge.className = "mt-2 px-3 py-1 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
-    badge.innerText = data.risk_tier || "High Risk Exposure";
-  }
+    // Update labels and values
+    document.getElementById("lblBasePay").innerText = data.labels.base_pay + ":";
+    document.getElementById("lblOvertimePay").innerText = data.labels.overtime_pay + ":";
+    document.getElementById("lblDeductions").innerText = data.labels.deductions + ":";
+    document.getElementById("lblNetPay").innerText = data.labels.net_pay + ":";
 
-  // 2. Key Metrics
-  if (data.key_metrics) {
-    document.getElementById("metricFinancial").innerText = data.key_metrics.total_financial_exposure || "N/A";
-    document.getElementById("metricPayment").innerText = data.key_metrics.payment_terms || "N/A";
-    document.getElementById("metricTermination").innerText = data.key_metrics.termination_notice || "N/A";
-    document.getElementById("metricJurisdiction").innerText = data.key_metrics.governing_jurisdiction || "N/A";
-  }
+    document.getElementById("valBasePay").innerText = `₹${data.base_pay.toFixed(2)}`;
+    document.getElementById("valOvertimePay").innerText = `+₹${data.overtime_pay.toFixed(2)} (${data.total_overtime_hours}h)`;
+    document.getElementById("valDeductions").innerText = `-₹${data.deductions.toFixed(2)}`;
+    document.getElementById("valNetPay").innerText = `₹${data.net_pay.toFixed(2)}`;
 
-  // 3. Explainer Summary
-  updateExplainerContent();
+    document.getElementById("valFormulaExplanation").innerText = data.formula_explanation;
 
-  // 4. Rights & Obligations Matrix
-  if (data.rights_and_obligations) {
-    const yourRights = data.rights_and_obligations.your_rights || [];
-    const yourObligations = data.rights_and_obligations.your_obligations || [];
-    const counterObligations = data.rights_and_obligations.counterparty_obligations || [];
+    // Fatigue status indicator
+    const fatigueBox = document.getElementById("fatigueAlertBox");
+    const fatigueText = document.getElementById("fatigueStatusText");
+    fatigueText.innerText = data.fatigue_status;
 
-    document.getElementById("yourRightsList").innerHTML = yourRights.map(r => `<li>• ${escapeHtml(r)}</li>`).join("") || "<li>None specified</li>";
-    document.getElementById("yourObligationsList").innerHTML = yourObligations.map(o => `<li>• ${escapeHtml(o)}</li>`).join("") || "<li>None specified</li>";
-    document.getElementById("counterpartyObligationsList").innerHTML = counterObligations.map(c => `<li>• ${escapeHtml(c)}</li>`).join("") || "<li>None specified</li>";
-  }
+    if (data.is_fatigued) {
+      fatigueBox.className = "p-2.5 rounded-lg border text-[11px] font-semibold bg-rose-50 text-rose-800 border-rose-300";
+    } else {
+      fatigueBox.className = "p-2.5 rounded-lg border text-[11px] font-semibold bg-emerald-50 text-emerald-800 border-emerald-200";
+    }
 
-  // 5. Red Flags Radar
-  const redFlagsContainer = document.getElementById("redFlagsContainer");
-  if (data.red_flags && data.red_flags.length > 0) {
-    redFlagsContainer.innerHTML = data.red_flags.map((rf) => {
-      let severityBadge = "bg-rose-50 text-rose-700 border-rose-200";
-      if (rf.severity === "Medium") severityBadge = "bg-amber-50 text-amber-700 border-amber-200";
-      if (rf.severity === "Low") severityBadge = "bg-slate-100 text-slate-700 border-slate-200";
-
-      return `
-        <div class="redflag-card bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-2">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div class="flex items-center space-x-2">
-              <span class="px-2 py-0.5 text-[11px] font-bold rounded-md border ${severityBadge}">${escapeHtml(rf.severity || 'High')}</span>
-              <span class="text-xs font-bold text-slate-900">${escapeHtml(rf.clause_reference || 'Clause')}</span>
-              <span class="text-[11px] text-slate-500">(${escapeHtml(rf.category || 'Legal Risk')})</span>
-            </div>
-            <button onclick="prepareClauseRedraft('${escapeHtml(rf.clause_reference)}', '${escapeHtml(rf.problem)}')" class="self-start sm:self-auto flex items-center space-x-1 text-xs font-semibold text-fuchsia-700 hover:text-fuchsia-800 bg-fuchsia-50 hover:bg-fuchsia-100 px-2.5 py-1 rounded-md border border-fuchsia-200 transition">
-              <i data-lucide="pencil-ruler" class="w-3.5 h-3.5"></i>
-              <span>Draft Counter-Clause</span>
-            </button>
-          </div>
-          <div class="text-xs text-slate-700 font-medium">
-            <strong class="text-slate-900">The Problem:</strong> ${escapeHtml(rf.problem)}
-          </div>
-          <div class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded-lg border border-rose-200 font-medium">
-            <strong>Real-World Consequence:</strong> ${escapeHtml(rf.real_world_consequence)}
-          </div>
-          <div class="text-xs text-emerald-800 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 font-medium">
-            <strong>Recommended Remedy:</strong> ${escapeHtml(rf.recommended_remedy)}
-          </div>
-        </div>
-      `;
-    }).join("");
-  } else {
-    redFlagsContainer.innerHTML = `<div class="p-4 text-xs text-slate-500 bg-white rounded-xl border border-slate-200">No critical red flags detected.</div>`;
-  }
-
-  // 6. Action Checklist
-  if (data.action_checklist) {
-    const checklist = document.getElementById("actionChecklist");
-    checklist.innerHTML = data.action_checklist.map(item => `
-      <li class="flex items-start space-x-2">
-        <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
-        <span>${escapeHtml(item)}</span>
-      </li>
-    `).join("");
-  }
-
-  initLucide();
-}
-
-function setExplainerMode(mode) {
-  state.explainerMode = mode;
-  const eli5Btn = document.getElementById("viewEli5Btn");
-  const execBtn = document.getElementById("viewExecBtn");
-
-  if (mode === "eli5") {
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold shadow-sm transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
-    eli5Btn.setAttribute("aria-checked", "true");
-    execBtn.className = "px-3 py-1 text-xs rounded-md text-slate-600 hover:text-slate-900 font-semibold transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
-    execBtn.setAttribute("aria-checked", "false");
-    document.getElementById("summaryHeading").innerText = "Layman's Plain-English Breakdown";
-  } else {
-    execBtn.className = "px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold shadow-sm transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
-    execBtn.setAttribute("aria-checked", "true");
-    eli5Btn.className = "px-3 py-1 text-xs rounded-md text-slate-600 hover:text-slate-900 font-semibold transition focus:outline-none focus:ring-1 focus:ring-indigo-400";
-    eli5Btn.setAttribute("aria-checked", "false");
-    document.getElementById("summaryHeading").innerText = "Executive Commercial Summary";
-  }
-
-  updateExplainerContent();
-}
-
-function updateExplainerContent() {
-  if (!state.analysisData) return;
-  const summaryBox = document.getElementById("summaryContent");
-  if (state.explainerMode === "eli5") {
-    summaryBox.innerText = state.analysisData.layman_eli5 || state.analysisData.executive_summary || "No summary available.";
-  } else {
-    summaryBox.innerText = state.analysisData.executive_summary || state.analysisData.layman_eli5 || "No summary available.";
+    document.getElementById("todayHoursDisplay").innerText = `${data.total_work_hours} hrs total`;
+  } catch (err) {
+    console.error("Failed to load payslip:", err);
   }
 }
 
 // ============================================================
-// 2. CONTRACT REDLINER & SEMANTIC DIFF ENGINE
+// FEATURE 3: ANONYMOUS GRIEVANCE & SAFETY REPORTING
 // ============================================================
-async function runComparison() {
-  const textA = document.getElementById("diffTextA").value.trim();
-  const textB = document.getElementById("diffTextB").value.trim();
 
-  if (!textA || !textB) {
-    alert("Please enter or load contract text for both Version 1 and Version 2.");
+async function submitGrievance(e) {
+  e.preventDefault();
+  const category = document.getElementById("grievanceCategory").value;
+  const urgency = document.getElementById("grievanceUrgency").value;
+  const description = document.getElementById("grievanceDescription").value.trim();
+
+  if (!description) {
+    alert("Please provide an incident description.");
     return;
   }
 
-  const btn = document.getElementById("runComparisonBtn");
-  const origHTML = btn.innerHTML;
-  btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Comparing...</span>`;
-  initLucide();
-
   try {
-    const res = await fetch("/api/compare", {
+    const res = await fetch("/api/grievances", {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text_a: textA,
-        text_b: textB,
-        api_key: state.userApiKey
+        industry: state.industry,
+        category: category,
+        urgency: urgency,
+        description: description
       })
     });
 
     const data = await res.json();
     if (data.error) {
-      alert(`Comparison error: ${data.error}`);
+      alert("Submission error: " + data.error);
       return;
     }
 
-    state.comparisonData = data;
-    renderComparisonData(data);
+    alert(`Zero-Knowledge Report Submitted!\n\nYour Anonymous Ticket Code: ${data.ticket_code}\n\nSave this code to check resolution progress without revealing your identity.`);
+    document.getElementById("grievanceDescription").value = "";
+    document.getElementById("trackCodeInput").value = data.ticket_code;
+    trackTicket();
+    await loadGrievances();
+    await loadStats();
   } catch (err) {
-    console.error("Comparison failed:", err);
-  } finally {
-    btn.innerHTML = origHTML;
-    initLucide();
+    alert("Failed to submit grievance: " + err.message);
   }
 }
 
-function renderComparisonData(data) {
-  // Delta Badge
-  const deltaBadge = document.getElementById("redlineRiskDeltaBadge");
-  const delta = data.net_risk_delta || "Neutral";
-  deltaBadge.innerText = delta;
+async function trackTicket() {
+  const code = document.getElementById("trackCodeInput").value.trim().toUpperCase();
+  if (!code) return;
 
-  if (delta.toLowerCase().includes("favorable")) {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-  } else if (delta.toLowerCase().includes("risk")) {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
-  } else {
-    deltaBadge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-slate-100 text-slate-700 border border-slate-200";
+  const resultBox = document.getElementById("trackResultBox");
+  resultBox.classList.remove("hidden");
+  resultBox.innerHTML = `<span class="text-slate-400">Checking ticket status...</span>`;
+
+  try {
+    const res = await fetch(`/api/grievances/track/${code}`);
+    const data = await res.json();
+    if (data.error) {
+      resultBox.innerHTML = `<span class="text-rose-600 font-bold">${data.error}</span>`;
+      return;
+    }
+
+    let statusBadge = "bg-amber-100 text-amber-800";
+    if (data.status === "Resolved") statusBadge = "bg-emerald-100 text-emerald-800";
+
+    resultBox.innerHTML = `
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <strong class="text-slate-900">${data.ticket_code} (${data.category})</strong>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusBadge}">${data.status}</span>
+        </div>
+        <p class="text-slate-600 text-[11px]"><strong>Report:</strong> ${data.description}</p>
+        <p class="text-slate-800 text-[11px] bg-white p-2 rounded border border-slate-200">
+          <strong>Action Note:</strong> ${data.resolution_note}
+        </p>
+      </div>
+    `;
+  } catch (err) {
+    resultBox.innerHTML = `<span class="text-rose-600">Error tracking ticket.</span>`;
   }
+}
 
-  document.getElementById("redlineScoreDelta").innerText = data.score_delta || "";
-  document.getElementById("redlineSummary").innerText = data.comparison_summary || "";
-  document.getElementById("redlineVerdict").innerText = data.negotiation_verdict || "Review changes";
+// ============================================================
+// EMPLOYER DASHBOARD DATA
+// ============================================================
 
-  // Clause shifts list
-  const shiftsContainer = document.getElementById("clauseShiftsContainer");
-  if (data.clause_changes && data.clause_changes.length > 0) {
-    shiftsContainer.innerHTML = data.clause_changes.map(change => {
-      let impactBadge = "bg-emerald-50 text-emerald-700 border-emerald-200";
-      if (change.impact === "High Risk") impactBadge = "bg-rose-50 text-rose-700 border-rose-200";
-      if (change.impact === "Neutral") impactBadge = "bg-slate-100 text-slate-700 border-slate-200";
+async function loadStats() {
+  try {
+    const res = await fetch(`/api/stats?industry=${state.industry}`);
+    const data = await res.json();
+
+    document.getElementById("kpiWorkforce").innerText = data.total_workforce;
+    document.getElementById("kpiHours").innerText = data.total_hours_logged;
+    document.getElementById("kpiOvertime").innerText = `${data.total_overtime_hours} hrs overtime`;
+    document.getElementById("kpiGrievances").innerText = data.open_grievances;
+    document.getElementById("kpiCritical").innerText = `${data.critical_safety_alerts} Critical Hazard(s)`;
+    document.getElementById("kpiSDG").innerText = `${data.sdg_compliance_score}%`;
+
+    const fatigueBanner = document.getElementById("employerFatigueBanner");
+    const fatigueDesc = document.getElementById("fatigueBannerDesc");
+    if (data.fatigued_workers_count > 0) {
+      fatigueBanner.classList.remove("hidden");
+      fatigueDesc.innerText = `${data.fatigued_workers_count} worker(s) in this sector have exceeded the 48-hour weekly labor cap. Rotating shifts is recommended to prevent fatigue-induced accidents.`;
+    } else {
+      fatigueBanner.classList.add("hidden");
+    }
+  } catch (err) {
+    console.error("Failed to load stats:", err);
+  }
+}
+
+async function loadAttendance() {
+  try {
+    const res = await fetch(`/api/attendance?industry=${state.industry}`);
+    const records = await res.json();
+    const tbody = document.getElementById("attendanceTableBody");
+
+    if (records.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-3 text-center text-slate-400">No shift records yet.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = records.map(r => `
+      <tr class="hover:bg-slate-50">
+        <td class="py-2 px-2.5 font-bold text-slate-900">${r.worker_name} <span class="text-[10px] text-slate-400 font-normal">(${r.worker_code})</span></td>
+        <td class="py-2 px-2.5 text-slate-500">${r.date}</td>
+        <td class="py-2 px-2.5 font-semibold">${r.regular_hours} hrs</td>
+        <td class="py-2 px-2.5 font-semibold ${r.overtime_hours > 0 ? 'text-emerald-700' : 'text-slate-400'}">${r.overtime_hours} hrs</td>
+        <td class="py-2 px-2.5">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.status === 'completed' ? 'bg-slate-100 text-slate-700' : 'bg-emerald-100 text-emerald-800'}">
+            ${r.status === 'completed' ? 'Completed' : 'Active Shift'}
+          </span>
+        </td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    console.error("Failed to load attendance:", err);
+  }
+}
+
+async function loadGrievances() {
+  try {
+    const res = await fetch(`/api/grievances?industry=${state.industry}`);
+    const grievances = await res.json();
+    const container = document.getElementById("grievanceListContainer");
+
+    if (grievances.length === 0) {
+      container.innerHTML = `<div class="p-4 text-center text-slate-400 text-xs">No grievances reported for this sector.</div>`;
+      return;
+    }
+
+    container.innerHTML = grievances.map(g => {
+      let urgencyBadge = "bg-slate-100 text-slate-700";
+      if (g.urgency === "Critical") urgencyBadge = "bg-rose-100 text-rose-800 font-bold border border-rose-300";
+      if (g.urgency === "Medium") urgencyBadge = "bg-amber-100 text-amber-800";
+
+      let statusBadge = "bg-amber-100 text-amber-800";
+      if (g.status === "Resolved") statusBadge = "bg-emerald-100 text-emerald-800";
 
       return `
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-900">${escapeHtml(change.section_title)}</span>
-            <div class="flex items-center space-x-2">
-              <span class="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-slate-200 text-slate-700">${escapeHtml(change.change_type || 'Modified')}</span>
-              <span class="px-2 py-0.5 text-[10px] font-bold rounded border ${impactBadge}">${escapeHtml(change.impact)}</span>
+            <div class="flex items-center space-x-1.5">
+              <span class="font-bold text-slate-900">${g.ticket_code}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] ${urgencyBadge}">${g.urgency}</span>
+              <span class="text-slate-500 font-medium">(${g.category})</span>
             </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusBadge}">${g.status}</span>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div class="bg-white p-2.5 rounded-lg border border-slate-200">
-              <span class="text-[10px] uppercase font-bold text-slate-500 block mb-1">Version 1 (Original)</span>
-              <p class="text-slate-700">${escapeHtml(change.original_intent)}</p>
-            </div>
-            <div class="bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-200">
-              <span class="text-[10px] uppercase font-bold text-indigo-700 block mb-1">Version 2 (Redline)</span>
-              <p class="text-slate-800">${escapeHtml(change.revised_intent)}</p>
-            </div>
+
+          <p class="text-slate-700 leading-snug">${g.description}</p>
+          <div class="text-[11px] text-slate-500 bg-white p-2 rounded border border-slate-200">
+            <strong>Action Note:</strong> ${g.resolution_note}
           </div>
-          <div class="text-xs text-indigo-900 bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-200">
-            <strong>Legal Impact & Analysis:</strong> ${escapeHtml(change.analysis)}
+
+          <!-- Employer Status Triage Action -->
+          <div class="flex items-center justify-between pt-1 border-t border-slate-200 text-[11px]">
+            <span class="text-slate-400">Logged: ${g.created_at || 'Recently'}</span>
+            <div class="space-x-1">
+              ${g.status !== 'Under Investigation' && g.status !== 'Resolved' ? `
+                <button onclick="updateGrievance('${g.ticket_code}', 'Under Investigation')" class="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white rounded font-semibold">Mark Investigating</button>
+              ` : ''}
+              ${g.status !== 'Resolved' ? `
+                <button onclick="updateGrievance('${g.ticket_code}', 'Resolved')" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-semibold">Mark Resolved</button>
+              ` : '<span class="text-emerald-700 font-bold">✓ Case Closed</span>'}
+            </div>
           </div>
         </div>
       `;
     }).join("");
-  } else {
-    shiftsContainer.innerHTML = `<div class="p-3 text-xs text-slate-500">No major substantive clause shifts detected.</div>`;
+  } catch (err) {
+    console.error("Failed to load grievances:", err);
   }
-
-  initLucide();
 }
 
-// ============================================================
-// 3. CLAUSE INTERROGATOR (GROUNDED COPILOT)
-// ============================================================
-async function askInterrogator(question) {
-  const container = document.getElementById("interrogateMessages");
-
-  // User Message
-  const userMsgEl = document.createElement("div");
-  userMsgEl.className = "flex items-start space-x-3 justify-end";
-  userMsgEl.innerHTML = `
-    <div class="bg-indigo-600 text-white p-3.5 rounded-2xl max-w-xl text-xs shadow-sm font-medium">
-      ${escapeHtml(question)}
-    </div>
-    <div class="w-7 h-7 rounded-lg bg-indigo-700 flex items-center justify-center shrink-0 text-white">
-      <i data-lucide="user" class="w-4 h-4"></i>
-    </div>
-  `;
-  container.appendChild(userMsgEl);
-  container.scrollTop = container.scrollHeight;
-  initLucide();
-
-  // Assistant Loading Placeholder
-  const loadingEl = document.createElement("div");
-  loadingEl.className = "flex items-start space-x-3";
-  loadingEl.innerHTML = `
-    <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0 text-white">
-      <i data-lucide="bot" class="w-4 h-4"></i>
-    </div>
-    <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl max-w-xl text-xs text-slate-500 flex items-center space-x-2">
-      <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-sky-600"></i>
-      <span>Researching contract clauses...</span>
-    </div>
-  `;
-  container.appendChild(loadingEl);
-  container.scrollTop = container.scrollHeight;
-  initLucide();
+async function updateGrievance(ticketCode, status) {
+  const note = prompt(`Enter corrective action / resolution note for ticket ${ticketCode}:`, status === "Resolved" ? "Corrective action verified on site. Issue resolved." : "Investigating on site.");
+  if (note === null) return;
 
   try {
-    const res = await fetch("/api/interrogate", {
+    const res = await fetch("/api/grievances/update-status", {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: state.activeContract.text,
-        question: question,
-        history: state.interrogateHistory,
-        api_key: state.userApiKey
+        ticket_code: ticketCode,
+        status: status,
+        resolution_note: note
       })
     });
-
     const data = await res.json();
-    loadingEl.remove();
-
-    if (data.error) {
-      const errEl = document.createElement("div");
-      errEl.className = "text-xs text-rose-600 p-2 font-bold";
-      errEl.innerText = `Error: ${data.error}`;
-      container.appendChild(errEl);
-      return;
-    }
-
-    // Render Assistant Response
-    const assistantMsgEl = document.createElement("div");
-    assistantMsgEl.className = "flex items-start space-x-3";
-
-    let citationsHtml = "";
-    if (data.clause_citations && data.clause_citations.length > 0) {
-      citationsHtml = `
-        <div class="space-y-1.5 pt-2 border-t border-slate-200">
-          <span class="text-[10px] uppercase font-bold text-sky-700 block">Verified Clause Citations:</span>
-          ${data.clause_citations.map(c => `
-            <div class="bg-white p-2.5 rounded-lg border border-sky-200 text-xs">
-              <div class="flex items-center justify-between mb-1">
-                <strong class="text-sky-900">${escapeHtml(c.clause_name)}</strong>
-                <button onclick="highlightInInspector('${escapeHtml(c.clause_name)}')" class="text-[10px] text-sky-600 font-semibold hover:underline">View in Contract</button>
-              </div>
-              <blockquote class="italic text-slate-700 border-l-2 border-sky-500 pl-2 text-[11px] mb-1">"${escapeHtml(c.quote)}"</blockquote>
-              <p class="text-slate-600 text-[11px]">${escapeHtml(c.explanation)}</p>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    let tacticalHtml = "";
-    if (data.tactical_advice) {
-      tacticalHtml = `
-        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-lg text-[11px] text-amber-800 font-medium">
-          <strong>Tactical Precaution:</strong> ${escapeHtml(data.tactical_advice)}
-        </div>
-      `;
-    }
-
-    let followupsHtml = "";
-    if (data.suggested_followups && data.suggested_followups.length > 0) {
-      followupsHtml = `
-        <div class="pt-1 flex flex-wrap gap-1.5">
-          <span class="text-[10px] text-slate-400 self-center">Follow-up:</span>
-          ${data.suggested_followups.map(f => `
-            <button onclick="askInterrogator('${escapeHtml(f)}')" class="text-[10px] bg-white hover:bg-slate-100 text-sky-700 px-2 py-0.5 rounded-md border border-slate-200 shadow-sm transition">
-              ${escapeHtml(f)}
-            </button>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    assistantMsgEl.innerHTML = `
-      <div class="w-7 h-7 rounded-lg bg-sky-600 flex items-center justify-center shrink-0 text-white">
-        <i data-lucide="bot" class="w-4 h-4"></i>
-      </div>
-      <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl max-w-2xl text-slate-800 space-y-3 shadow-sm">
-        <p class="leading-relaxed text-xs font-medium">${escapeHtml(data.answer)}</p>
-        ${citationsHtml}
-        ${tacticalHtml}
-        ${followupsHtml}
-      </div>
-    `;
-
-    container.appendChild(assistantMsgEl);
-    container.scrollTop = container.scrollHeight;
-    initLucide();
-
-    // Store in history
-    state.interrogateHistory.push({ role: "user", content: question });
-    state.interrogateHistory.push({ role: "assistant", content: data.answer });
-
+    alert(data.message || "Grievance status updated.");
+    await loadGrievances();
+    await loadStats();
   } catch (err) {
-    loadingEl.remove();
-    console.error("Interrogation failed:", err);
+    alert("Failed to update status: " + err.message);
   }
-}
-
-function highlightInInspector(clauseName) {
-  toggleInspector();
-  const inspector = document.getElementById("contractInspector");
-  inspector.classList.remove("hidden");
-  document.getElementById("inspectorBtnText").innerText = "Hide Contract Text";
-
-  const textarea = document.getElementById("contractTextInput");
-  const fullText = textarea.value;
-  
-  // Clean clause search term (e.g. "Section 6")
-  const match = clauseName.match(/(?:Section|Clause)\s*(\d+)/i);
-  let searchTarget = clauseName;
-  if (match) {
-    searchTarget = match[0];
-  }
-
-  const idx = fullText.toLowerCase().indexOf(searchTarget.toLowerCase());
-  if (idx !== -1) {
-    textarea.focus();
-    textarea.setSelectionRange(idx, idx + searchTarget.length + 80);
-    textarea.scrollTop = (idx / fullText.length) * textarea.scrollHeight;
-  }
-}
-
-// ============================================================
-// 4. "WHAT-IF" SCENARIO SIMULATOR
-// ============================================================
-function setScenario(text) {
-  document.getElementById("scenarioInput").value = text;
-  runScenarioSimulation(text);
-}
-
-async function runScenarioSimulation(scenario) {
-  const submitBtn = document.querySelector("#scenarioForm button[type='submit']");
-  const origHTML = submitBtn.innerHTML;
-  submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Simulating...</span>`;
-  initLucide();
-
-  try {
-    const res = await fetch("/api/simulate", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        text: state.activeContract.text,
-        scenario: scenario,
-        api_key: state.userApiKey
-      })
-    });
-
-    const data = await res.json();
-    if (data.error) {
-      alert(`Simulation error: ${data.error}`);
-      return;
-    }
-
-    renderScenarioData(data, scenario);
-  } catch (err) {
-    console.error("Simulation failed:", err);
-  } finally {
-    submitBtn.innerHTML = origHTML;
-    initLucide();
-  }
-}
-
-function renderScenarioData(data, scenario) {
-  document.getElementById("scenarioTitle").innerText = data.scenario_title || scenario;
-  document.getElementById("scenarioOutcome").innerText = data.projected_outcome || "";
-
-  // Leverage Badge
-  const badge = document.getElementById("scenarioLeverageBadge");
-  const lev = data.user_leverage || "Moderate";
-  badge.innerText = lev;
-  if (lev.toLowerCase().includes("strong")) {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-  } else if (lev.toLowerCase().includes("moderate")) {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200";
-  } else {
-    badge.className = "px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-50 text-rose-700 border border-rose-200";
-  }
-
-  // Action plan list
-  const actionList = document.getElementById("scenarioActionPlan");
-  if (data.step_by_step_action_plan) {
-    actionList.innerHTML = data.step_by_step_action_plan.map(s => `<li>• ${escapeHtml(s)}</li>`).join("");
-  }
-
-  // Traps list
-  const trapsList = document.getElementById("scenarioTraps");
-  if (data.traps_to_avoid) {
-    trapsList.innerHTML = data.traps_to_avoid.map(t => `<li>• ${escapeHtml(t)}</li>`).join("");
-  }
-
-  initLucide();
-}
-
-// ============================================================
-// 5. SMART COUNTER-CLAUSE DRAFTER
-// ============================================================
-function prepareClauseRedraft(clauseRef, problem) {
-  switchTab("tab-redraft");
-  goToWorkflowStep(3);
-  const textarea = document.getElementById("redraftClauseInput");
-  
-  // Search the active contract text for this clause if possible
-  const fullText = state.activeContract.text;
-  let snippet = "";
-  const match = clauseRef.match(/(?:Section|Clause)\s*(\d+)/i);
-  if (match) {
-    const term = match[0];
-    const idx = fullText.indexOf(term);
-    if (idx !== -1) {
-      snippet = fullText.substring(idx, idx + 600).trim();
-    }
-  }
-
-  textarea.value = snippet || `${clauseRef}: ${problem}`;
-  runClauseRedraft(textarea.value, "balanced");
-}
-
-async function runClauseRedraft(clause, goal) {
-  const submitBtn = document.querySelector("#redraftForm button[type='submit']");
-  const origHTML = submitBtn.innerHTML;
-  submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Drafter Active...</span>`;
-  initLucide();
-
-  try {
-    const res = await fetch("/api/redraft", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        clause: clause,
-        goal: goal,
-        context: state.activeContract.text,
-        api_key: state.userApiKey
-      })
-    });
-
-    const data = await res.json();
-    if (data.error) {
-      alert(`Redraft error: ${data.error}`);
-      return;
-    }
-
-    renderRedraftData(data);
-  } catch (err) {
-    console.error("Redraft failed:", err);
-  } finally {
-    submitBtn.innerHTML = origHTML;
-    initLucide();
-  }
-}
-
-function renderRedraftData(data) {
-  document.getElementById("redraftCritique").innerText = data.original_clause_critique || "";
-  document.getElementById("redraftWording").innerText = data.recommended_redraft || "";
-  document.getElementById("redraftEmailPitch").innerText = data.negotiation_email_pitch || "";
-  initLucide();
-}
-
-// ============================================================
-// 6. MULTILINGUAL ACCESS ENGINE
-// ============================================================
-async function runTranslation(targetLanguage) {
-  const submitBtn = document.querySelector("#translateForm button[type='submit']");
-  const origHTML = submitBtn.innerHTML;
-  submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Translating...</span>`;
-  initLucide();
-
-  // Translate executive summary or first 1500 chars of contract
-  const textToTranslate = state.analysisData?.executive_summary || state.activeContract.text.substring(0, 1500);
-
-  try {
-    const res = await fetch("/api/translate", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        text: textToTranslate,
-        target_language: targetLanguage,
-        api_key: state.userApiKey
-      })
-    });
-
-    const data = await res.json();
-    if (data.error) {
-      alert(`Translation error: ${data.error}`);
-      return;
-    }
-
-    renderTranslationData(data);
-  } catch (err) {
-    console.error("Translation failed:", err);
-  } finally {
-    submitBtn.innerHTML = origHTML;
-    initLucide();
-  }
-}
-
-function renderTranslationData(data) {
-  document.getElementById("transTargetLangBadge").innerText = data.target_language || "Translated";
-  document.getElementById("transTitle").innerText = data.translated_title || "Summary";
-  document.getElementById("transPlainExplanation").innerText = data.plain_explanation_target_lang || "";
-  document.getElementById("transContent").innerText = data.translated_content || "";
-
-  // Glossary
-  const glossaryContainer = document.getElementById("transGlossary");
-  if (data.key_terms_glossary && data.key_terms_glossary.length > 0) {
-    glossaryContainer.innerHTML = data.key_terms_glossary.map(item => `
-      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-        <div class="flex items-center justify-between text-xs mb-1">
-          <strong class="text-slate-900">${escapeHtml(item.english_term)}</strong>
-          <span class="text-teal-700 font-bold">${escapeHtml(item.translated_term)}</span>
-        </div>
-        <p class="text-[11px] text-slate-600 leading-snug">${escapeHtml(item.meaning)}</p>
-      </div>
-    `).join("");
-  } else {
-    glossaryContainer.innerHTML = `<div class="text-xs text-slate-500">No glossary terms.</div>`;
-  }
-
-  initLucide();
-}
-
-// ============================================================
-// MODAL & UTILITY FUNCTIONS
-// ============================================================
-function openApiKeyModal() {
-  const modal = document.getElementById("apiKeyModal");
-  modal.classList.remove("hidden");
-  document.getElementById("groqApiKeyInput").value = state.userApiKey;
-  initLucide();
-}
-
-function closeApiKeyModal() {
-  document.getElementById("apiKeyModal").classList.add("hidden");
-}
-
-function saveApiKey() {
-  const key = document.getElementById("groqApiKeyInput").value.trim();
-  state.userApiKey = key;
-  if (key) {
-    localStorage.setItem("legallens_groq_key", key);
-  } else {
-    localStorage.removeItem("legallens_groq_key");
-  }
-
-  // Send to backend session
-  fetch("/api/set-api-key", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ api_key: key })
-  }).then(() => {
-    checkEngineStatus();
-    closeApiKeyModal();
-    alert(key ? "Groq API Key activated for live LLaMA 3.3 70B inference!" : "Reverted to Built-in High-Fidelity Engine.");
-  });
-}
-
-function clearApiKey() {
-  document.getElementById("groqApiKeyInput").value = "";
-  saveApiKey();
-}
-
-function openExportModal() {
-  const modal = document.getElementById("exportModal");
-  modal.classList.remove("hidden");
-
-  // Generate complete Markdown Audit Report
-  const d = state.analysisData || {};
-  const markdown = `
-# LEGALLENS AI — CONTRACT AUDIT REPORT
-Generated by LegalLens AI for PromptWars 2026
-
-DOCUMENT TITLE: ${state.activeContract.title}
-PARTIES: ${state.activeContract.parties}
-OVERALL SAFETY SCORE: ${d.overall_health_score || 'N/A'} / 100
-RISK LEVEL: ${d.risk_tier || 'N/A'}
-
-=======================================================
-1. EXECUTIVE BRIEFING
-=======================================================
-${d.executive_summary || 'N/A'}
-
-=======================================================
-2. PLAIN-ENGLISH (LAYMAN / ELI5) EXPLANATION
-=======================================================
-${d.layman_eli5 || 'N/A'}
-
-=======================================================
-3. CORE COMMERCIAL TERMS & FINANCIAL EXPOSURE
-=======================================================
-- Financial Exposure: ${d.key_metrics?.total_financial_exposure || 'N/A'}
-- Payment Terms: ${d.key_metrics?.payment_terms || 'N/A'}
-- Termination Notice: ${d.key_metrics?.termination_notice || 'N/A'}
-- Governing Law & Forum: ${d.key_metrics?.governing_jurisdiction || 'N/A'}
-
-=======================================================
-4. RED FLAGS & CONTRACTUAL ASYMMETRIES
-=======================================================
-${(d.red_flags || []).map((rf, i) => `
-[${rf.id || `RF-${i+1}`}] ${rf.clause_reference} (Severity: ${rf.severity})
-Category: ${rf.category}
-Problem: ${rf.problem}
-Real-World Consequence: ${rf.real_world_consequence}
-Recommended Remedy: ${rf.recommended_remedy}
-`).join("\n")}
-
-=======================================================
-5. PRE-SIGNING ACTION CHECKLIST
-=======================================================
-${(d.action_checklist || []).map(item => `[ ] ${item}`).join("\n")}
-
-=======================================================
-DISCLAIMER: This report was generated by an AI assistant for informational purposes and does not constitute formal legal representation. Always consult licensed legal counsel for binding commercial decisions.
-`.trim();
-
-  document.getElementById("auditReportMarkdown").innerText = markdown;
-  initLucide();
-}
-
-function closeExportModal() {
-  document.getElementById("exportModal").classList.add("hidden");
-}
-
-function copyContractText() {
-  const text = document.getElementById("contractTextInput").value;
-  navigator.clipboard.writeText(text).then(() => alert("Contract text copied to clipboard!"));
-}
-
-function copyElementText(elementId) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-  const text = el.innerText || el.textContent;
-  navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }

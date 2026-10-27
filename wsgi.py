@@ -1,6 +1,6 @@
 """
-WSGI Entry Point for LegalLens AI.
-Production entry point for Gunicorn, Render, and standard WSGI servers.
+WSGI Entry Point for FairShift.
+Production entry point for Gunicorn, Render, and standard WSGI servers with Neon PostgreSQL support.
 """
 
 import os
